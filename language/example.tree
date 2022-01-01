@@ -1,0 +1,31 @@
+skip 100
+| color #333333
+| width 5 abs
+| stem 20
+| branch
+  > rotate -45 deg
+    | stem 15
+    ;
+  > stem 70
+    | rotate -95 deg
+    | frac 4
+      > width 0.7 rel
+        | rotate iter 47 deg
+        | stem 20
+        | rotate -50 deg
+        | frac 3
+          > width 0.6 rel
+            | rotate iter 30 deg
+            | stem 10
+            | rotate -22.5 deg
+            | frac 3
+              > rotate iter 15 deg
+                | width 0.3 rel
+                | stem 5
+                | color #C0C0C0 trans 0.3
+                | flower 8
+                ;
+            ;
+        ;
+    ;
+;
