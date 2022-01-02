@@ -14,7 +14,7 @@ Use Plant online at <a href="https://plantlang.ink">https://plantlang.ink</a>.
 <br>
 
 ## Build it yourself
-Simply copy the [antlr jar](https://www.antlr.org/download/antlr-4.9.3-complete.jar) into the language directory clone this repo and run `make.sh`. Then, start a local server under the demo subdirectory.
+Simply copy the [antlr jar](https://www.antlr.org/download/antlr-4.9.3-complete.jar) into the language directory of a clone of this repo and run `make.sh`. Then, start a local server under the demo subdirectory (like `python -m http.server 9000`).
 
 <br>
 
