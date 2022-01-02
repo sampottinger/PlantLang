@@ -1,645 +1,27 @@
-const CODE_EDITOR_ID = "codeEditor";
-const STATUS_DISPLAY_ID = "statusDisplay";
-const CANVAS_ID = "canvas";
-const MINIFY_ID = "minify";
-const BEAUTIFY_ID = "beautify";
-const EXAMPLE_ID = "example";
-const SHARE_ID = "share";
-const EXAMPLE_LINK_CLASS = "ref-example";
-
-const toolkit = PlantLang.getToolkit();
-let lastInstructions = [];
-let lastCode = null;
-let editor = null;
-let mouseX = 0;
-let mouseY = 0;
-let startTime = new Date().getTime();
-
-
-// Thanks https://stackoverflow.com/questions/6234773/can-i-escape-html-special-chars-in-javascript
-function escapeHtml(unsafe) {
-    return unsafe
-         .replace(/&/g, "&amp;")
-         .replace(/</g, "&lt;")
-         .replace(/>/g, "&gt;")
-         .replace(/"/g, "&quot;")
-         .replace(/'/g, "&#039;");
- }
-
-
-class SpeedSettings {
-
-  constructor(multiplier, offset) {
-    const self = this;
-    self._multiplier = multiplier;
-    self._offset = offset;
-  }
-
-  getMultiplier() {
-    const self = this;
-    return self._multiplier;
-  }
-
-  getOffset() {
-    const self = this;
-    return self._offset;
-  }
-
-}
-
-
-class State {
-
-  constructor(canvas, canvasContext, mouseX, mouseY, duration, curDate) {
-    const self = this;
-    self._canvas = canvas;
-    self._canvasContext = canvasContext;
-    self._mouseX = mouseX;
-    self._mouseY = mouseY;
-    self._duration = duration;
-    self._curDate = curDate;
-    self._indicies = [0];
-    self._widths = [10];
-    self._speeds = [new SpeedSettings(1, 0)];
-  }
-
-  getCanvas() {
-    const self = this;
-    return self._canvas;
-  }
-
-  getCanvasContext() {
-    const self = this;
-    return self._canvasContext;
-  }
-
-  getIndex(levels) {
-    const self = this;
-    if (levels >= self._indicies.length) {
-      return 0;
-    } else {
-      return self._indicies[self._indicies.length - 1 - levels];
-    }
-  }
-
-  setIndex(index) {
-    const self = this;
-    self._indicies[self._indicies.length - 1] = index;
-  }
-
-  getWidth() {
-    const self = this;
-    return self._widths[self._widths.length - 1];
-  }
-
-  setWidth(newWidth) {
-    const self = this;
-    self._widths[self._widths.length - 1] = newWidth;
-  }
-
-  getMouseX() {
-    const self = this;
-    return self._mouseX;
-  }
-
-  getMouseY() {
-    const self = this;
-    return self._mouseY;
-  }
-
-  getDuration() {
-    const self = this;
-
-    const speedSettings = self.getSpeedSettings();
-    const multiplier = speedSettings.getMultiplier();
-    const offset = speedSettings.getOffset();
-
-    return self._duration * multiplier + offset;
-  }
-
-  getMillisecond() {
-    const self = this;
-    return self._curDate.getMilliseconds();
-  }
-
-  getSecond() {
-    const self = this;
-    return self._curDate.getSeconds();
-  }
-
-  getMinute() {
-    const self = this;
-    return self._curDate.getMinutes();
-  }
-
-  getHour() {
-    const self = this;
-    return self._curDate.getHours();
-  }
-
-  getDay() {
-    const self = this;
-    return self._curDate.getDate() - 1;
-  }
-
-  getMonth() {
-    const self = this;
-    return self._curDate.getMonth();
-  }
-
-  getYear() {
-    const self = this;
-    return self._curDate.getYear();
-  }
-
-  getSpeedSettings() {
-    const self = this;
-    return self._speeds[self._speeds.length - 1];
-  }
-
-  setSpeedSettings(newSpeedSettings) {
-    const self = this;
-    self._speeds[self._speeds.length - 1] = newSpeedSettings;
-  }
-
-  save() {
-    const self = this;
-
-    self.getCanvasContext().save();
-    self._indicies.push(self.getIndex(0));
-    self._widths.push(self.getWidth());
-    self._speeds.push(self.getSpeedSettings());
-  }
-
-  restore() {
-    const self = this;
-
-    self.getCanvasContext().restore();
-    self._indicies.pop();
-    self._widths.pop();
-    self._speeds.pop();
-  }
-
-}
-
-
-class CompileVisitor extends toolkit.PlantLangVisitor {
-
-  visitNumber(ctx) {
-    const self = this;
-
-    const raw = ctx.getText();
-
-    const signMultiplier = raw.includes("-") ? -1 : 1;
-
-    const bodyRawText = ctx.getChild(ctx.getChildCount() - 1).getText();
-    const bodyParsed = signMultiplier * parseFloat(bodyRawText);
-
-    const multipliers = [(state) => bodyParsed];
-
-    const iterMatches = raw.match(/(\.)*iter/g);
-
-    if (iterMatches !== null) {
-      iterMatches.forEach((match) => {
-        const numLevels = self._count(match, ".");
-        multipliers.push((state) => state.getIndex(numLevels));
-      });
-    }
-
-    const numRand = self._count(raw, "rand");
-    if (numRand > 0) {
-      let randStatic = 1;
-
-      for (let i = 0; i < numRand; i++) {
-        randStatic *= Math.random();
-      }
-
-      multipliers.push((state) => randStatic);
-    }
-
-    const numX = self._count(raw, "mouseX");
-    if (numX > 0) {
-      multipliers.push((state) => Math.pow(state.getMouseX(), numX));
-    }
-
-    const numY = self._count(raw, "mouseY");
-    if (numY > 0) {
-      multipliers.push((state) => Math.pow(state.getMouseY(), numY));
-    }
-
-    const numDur = self._count(raw, "dur");
-    if (numDur > 0) {
-      multipliers.push((state) => Math.pow(state.getDuration(), numDur));
-    }
-
-    const numSin = self._count(raw, "sin");
-    if (numSin > 0) {
-      multipliers.push((state) => Math.pow(
-        Math.sin(state.getDuration() / Math.PI),
-        numSin
-      ));
-    }
-
-    const numMillis = self._count(raw, "millis");
-    if (numMillis > 0) {
-      multipliers.push((state) => Math.pow(state.getMillisecond(), numMillis));
-    }
-
-    const numSec = self._count(raw, "sec");
-    if (numSec > 0) {
-      multipliers.push((state) => Math.pow(state.getSecond(), numSec));
-    }
-
-    const numMin = self._count(raw, "min");
-    if (numMin > 0) {
-      multipliers.push((state) => Math.pow(state.getMinute(), numMin));
-    }
-
-    const numHour = self._count(raw, "hour");
-    if (numHour > 0) {
-      multipliers.push((state) => Math.pow(state.getHour(), numHour));
-    }
-
-    const numDay = self._count(raw, "day");
-    if (numDay > 0) {
-      multipliers.push((state) => Math.pow(state.getDay(), numDay));
-    }
-
-    const numMonth = self._count(raw, "month");
-    if (numMonth > 0) {
-      multipliers.push((state) => Math.pow(state.getMonth(), numMonth));
-    }
-
-    const numYear = self._count(raw, "year");
-    if (numYear > 0) {
-      multipliers.push((state) => Math.pow(state.getYear(), numYear));
-    }
-
-    return (state) => {
-      const realized = multipliers.map((x) => x(state));
-      return realized.reduce((a, b) => a * b);
-    };
-  }
-
-  visitStem(ctx) {
-    const self = this;
-
-    const lengthFuture = ctx.distance.accept(self);
-
-    const futureFunc = (state) => {
-      const length = lengthFuture(state);
-      state.getCanvasContext().fillRect(
-        -state.getWidth()/2,
-        0,
-        state.getWidth(),
-        length
-      );
-
-      state.getCanvasContext().translate(0, length);
-    };
-
-    return [futureFunc];
-  }
-
-  visitSkip(ctx) {
-    const self = this;
-
-    const lengthFuture = ctx.distance.accept(self);
-
-    const futureFunc = (state) => {
-      const length = lengthFuture(state);
-      state.getCanvasContext().translate(0, length);
-    };
-
-    return [futureFunc];
-  }
-
-  visitWidth(ctx) {
-    const self = this;
-
-    const targetFuture = ctx.target.accept(self);
-    const isRel = ctx.units.text === "rel";
-
-    const futureFunc = (state) => {
-      const target = targetFuture(state);
-      const newWidth = isRel ? state.getWidth() * target : target;
-      state.setWidth(newWidth);
-    };
-
-    return [futureFunc];
-  }
-
-  visitRotate(ctx) {
-    const self = this;
-
-    const targetFuture = ctx.target.accept(self);
-    const isDeg = ctx.units.text === "deg";
-
-    const futureFunc = (state) => {
-      const target = targetFuture(state);
-      const targetPi = isDeg ? target * Math.PI / 180 : target * Math.PI;
-      state.getCanvasContext().rotate(targetPi);
-    };
-
-    return [futureFunc];
-  }
-
-  visitColor(ctx) {
-    const self = this;
-
-    const hexCode = ctx.target.text;
-    const hasTrans = ctx.getChildCount() > 2;
-    const futureTrans = hasTrans ? ctx.getChild(3).accept(self) : null;
-
-    const futureFunc = (state) => {
-      state.getCanvasContext().fillStyle = hexCode;
-
-      if (hasTrans) {
-        state.getCanvasContext().globalAlpha = futureTrans(state);
-      }
-    };
-
-    return [futureFunc];
-  }
-
-  visitSpeed(ctx) {
-    const self = this;
-
-    const numChildren = ctx.getChildCount();
-    const hasStart = numChildren > 2;
-    const futureTarget = ctx.target.accept(self);
-    const futureStart = hasStart ? ctx.getChild(3).accept(self) : (x) => 0;
-
-    const futureFunc = (state) => {
-      const target = futureTarget(state);
-      const start = futureStart(state);
-      state.setSpeedSettings(new SpeedSettings(target, start));
-    };
-
-    return [futureFunc];
-  }
-
-  visitFlower(ctx) {
-    const self = this;
-
-    const radiusFuture = ctx.radius.accept(self);
-
-    const futureFunc = (state) => {
-      const radius = radiusFuture(state);
-
-      state.getCanvasContext().beginPath();
-      state.getCanvasContext().arc(0, 0, radius, 0, 2 * Math.PI, false);
-      state.getCanvasContext().fill();
-    };
-
-    return [futureFunc];
-  }
-
-  visitBranch(ctx) {
-    const self = this;
-
-    const instructions = [];
-    const numSubPrograms = (ctx.getChildCount() - 1) / 2;
-
-    for (let i = 0; i < numSubPrograms; i++) {
-      const subProgram = ctx.getChild(2 + i * 2).accept(self);
-      instructions.push((state) => state.save());
-      instructions.push((state) => state.setIndex(i));
-      instructions.push.apply(instructions, subProgram);
-      instructions.push((state) => state.restore());
-    }
-
-    return instructions;
-  }
-
-  visitFrac(ctx) {
-    const self = this;
-
-    const instructions = [];
-    const subProgram = ctx.getChild(ctx.getChildCount() - 1).accept(self);
-    const numFrac = parseFloat(ctx.getChild(1).getText());
-
-    for (let i = 0; i < numFrac; i++) {
-      instructions.push((state) => state.save());
-      instructions.push((state) => state.setIndex(i));
-      instructions.push.apply(instructions, subProgram);
-      instructions.push((state) => state.restore());
-    }
-
-    return instructions;
-  }
-
-  visitCommand(ctx) {
-    const self = this;
-    const instructions = ctx.getChild(0).accept(self);
-
-    return instructions;
-  }
-
-  visitProgram(ctx) {
-    const self = this;
-
-    const instructions = [];
-
-    const numCommands = ctx.getChildCount() / 2;
-    for (let i = 0; i < numCommands; i++) {
-      const newInstructions = ctx.getChild(i * 2).accept(self);
-      instructions.push.apply(instructions, newInstructions);
-    }
-
-    return instructions;
-  }
-
-  _count(target, match) {
-    const self = this;
-    return target.split(match).length - 1;
-  }
-
-}
-
-
-class CodeComponent {
-
-  constructor(commandType, command) {
-    const self = this;
-    self._commandType = commandType;
-    self._command = command;
-  }
-
-  getCommandType() {
-    const self = this;
-    return self._commandType;
-  }
-
-  getCommand() {
-    const self = this;
-    return self._command;
-  }
-
-}
-
-
-class BeautifyVisitor extends toolkit.PlantLangVisitor {
-
-  visitNumber(ctx) {
-    const self = this;
-
-    const raw = ctx.getText();
-
-    return raw.replace(/iter\s*/g, "iter ")
-      .replace(/rand\s*/g, "rand ")
-      .replace(/mouseX\s*/g, "mouseX ")
-      .replace(/mouseY\s*/g, "mouseY ")
-      .replace(/sin\s*/g, "sin ")
-      .replace(/dur\s*/g, "dur ")
-      .replace(/millis\s*/g, "millis ")
-      .replace(/sec\s*/g, "sec ")
-      .replace(/min\s*/g, "min ")
-      .replace(/hour\s*/g, "hour ")
-      .replace(/day\s*/g, "day ")
-      .replace(/month\s*/g, "month ")
-      .replace(/year\s*/g, "year ")
-      .replace(/\-\s*/g, "-")
-      .replace(/\+\s*/g, "+");
-  }
-
-  visitStem(ctx) {
-    const self = this;
-
-    const numberText = ctx.getChild(1).accept(self);
-    const immediate = "stem " + numberText;
-
-    return [new CodeComponent("simple", immediate)];
-  }
-
-  visitSkip(ctx) {
-    const self = this;
-
-    const numberText = ctx.getChild(1).accept(self);
-    const immediate = "skip " + numberText;
-
-    return [new CodeComponent("simple", immediate)];
-  }
-
-  visitWidth(ctx) {
-    const self = this;
-
-    const numberText = ctx.target.accept(self);
-    const immediate = "width " + numberText + " " + ctx.units.text;
-
-    return [new CodeComponent("simple", immediate)];
-  }
-
-  visitRotate(ctx) {
-    const self = this;
-
-    const numberText = ctx.target.accept(self);
-    const immediate = "rotate " + numberText + " " + ctx.units.text;
-
-    return [new CodeComponent("simple", immediate)];
-  }
-
-  visitColor(ctx) {
-    const self = this;
-
-    const core = "color " + ctx.target.text;
-    const numChildren = ctx.getChildCount();
-
-    let transAppend = "";
-    if (numChildren > 2) {
-      const numberText = ctx.getChild(3).accept(self);
-      transAppend = " trans " + numberText;
-    }
-
-    const immediate = core + transAppend;
-    return [new CodeComponent("simple", immediate)];
-  }
-
-  visitSpeed(ctx) {
-    const self = this;
-
-    const core = "speed " + ctx.target.accept(self);
-    const numChildren = ctx.getChildCount();
-
-    let startAppend = "";
-    if (numChildren > 2) {
-      const numberText = ctx.getChild(3).accept(self);
-      startAppend = " start " + numberText;
-    }
-
-    const immediate = core + startAppend;
-    return [new CodeComponent("simple", immediate)];
-  }
-
-  visitFlower(ctx) {
-    const self = this;
-
-    const numberText = ctx.radius.accept(self);
-    const immediate = "flower " + numberText;
-
-    return [new CodeComponent("simple", immediate)];
-  }
-
-  visitBranch(ctx) {
-    const self = this;
-
-    const numSubPrograms = (ctx.getChildCount() - 1) / 2;
-
-    const allCommands = [new CodeComponent("branch", "branch")];
-    for (let i = 0; i < numSubPrograms; i++) {
-      const subProgram = ctx.getChild(2 + i * 2).accept(self);
-      allCommands.push(new CodeComponent("subBranchStart", ""));
-      allCommands.push.apply(allCommands, subProgram);
-      allCommands.push(new CodeComponent("end", ""));
-      allCommands.push(new CodeComponent("subBranchEnd", ""));
-    }
-
-    return allCommands;
-  }
-
-  visitFrac(ctx) {
-    const self = this;
-
-    const immediate = "frac " + ctx.getChild(1).getText();
-    const allCommands = [new CodeComponent("branch", immediate)];
-    const subProgram = ctx.getChild(3).accept(self);
-    allCommands.push(new CodeComponent("subBranchStart", ""));
-    allCommands.push.apply(allCommands, subProgram);
-    allCommands.push(new CodeComponent("end", ""));
-    allCommands.push(new CodeComponent("subBranchEnd", ""));
-
-    return allCommands;
-  }
-
-  visitCommand(ctx) {
-    const self = this;
-    const instructions = ctx.getChild(0).accept(self);
-
-    return instructions;
-  }
-
-  visitProgram(ctx) {
-    const self = this;
-
-    const allCommands = [];
-
-    const numCommands = ctx.getChildCount() / 2;
-    for (let i = 0; i < numCommands; i++) {
-      const newCommands = ctx.getChild(i * 2).accept(self);
-      allCommands.push.apply(allCommands, newCommands);
-    }
-
-    return allCommands;
-  }
-
-}
-
-
+/**
+ * Driver for the online Plant editor.
+ *
+ * @author Sam Pottinger
+ * @license MIT License
+ */
+
+
+/**
+ * Convienence function to get currently entered source code.
+ *
+ * @return String source code (Plant code) which may or may not be valid.
+ */
 function getSourceCode() {
   return editor.getValue();
 }
 
 
+/**
+ * Get the abstract syntax tree for an input source code.
+ *
+ * @param input The source code to parse.
+ * @return A ParseResult.
+ */
 function getProgram(input) {
   if (input.replaceAll("\n", "").replaceAll(" ", "") === "") {
     document.getElementById(STATUS_DISPLAY_ID).textContent = "Ready!";
@@ -671,24 +53,40 @@ function getProgram(input) {
   });
 
   const program = parser.program();
-  const errorsEscaped = errors.map(escapeHtml);
-  const errorsHtml = errorsEscaped.join(".<br> ");
-  document.getElementById(STATUS_DISPLAY_ID).innerHTML = errorsHtml;
 
-  return errors.length == 0 ? program : null;
+  const outputProgram = errors.length == 0 ? program : null;
+  return new ParseResult(outputProgram, errors);
 }
 
 
+/**
+ * Run the source code currently entered by the user.
+ *
+ * Parse and compile the source code currently entered by the user. If there are
+ * errors, display them.
+ *
+ * @return List of functions which can run on a State object or null if compile
+ *   error.
+ */
 function compile() {
   const program = getProgram(getSourceCode());
-  if (program === null) {
+  if (!program.getWasSuccessful()) {
     return null;
   }
 
-  return program.accept(new CompileVisitor());
+  const errorsEscaped = program.getErrors().map(escapeHtml);
+  const errorsHtml = errorsEscaped.join(".<br> ");
+  document.getElementById(STATUS_DISPLAY_ID).innerHTML = errorsHtml;
+
+  return program.getAst().accept(new CompileVisitor());
 }
 
 
+/**
+ * Run a single frame of a Plant program.
+ *
+ * @param instructions The compiled Plant program to run (list of functions).
+ */
 function render(instructions) {
   const canvas = document.getElementById(CANVAS_ID);
   const canvasContext = canvas.getContext('2d');
@@ -720,6 +118,12 @@ function render(instructions) {
 }
 
 
+/**
+ * Check for new code from user.
+ *
+ * Check if the code entered by the user has changed and, if so, attempt to
+ * update the currently running program and browser history.
+ */
 function checkChange() {
   const newCode = getSourceCode();
   if (lastCode === newCode) {
@@ -733,14 +137,23 @@ function checkChange() {
   }
   lastInstructions = instructions;
 
+  startTime = new Date().getTime();
+
   updateHistory(true);
 }
 
 
+/**
+ * Update the Plant code saved to the address bar.
+ *
+ * @param replace Flag indicating if the current browser history should be
+ *   replaced. If true, the current record is replaced. If false, a new history
+ *   record is made.
+ */
 function updateHistory(replace) {
   const program = getProgram(getSourceCode());
 
-  if (program === null) {
+  if (!program.getWasSuccessful()) {
     return;
   }
 
@@ -759,10 +172,16 @@ function updateHistory(replace) {
 }
 
 
+/**
+ * Minify Plant code.
+ *
+ * @param input String containing Plant code to minify.
+ * @return Minifed code or null if parsing failed.
+ */
 function minifyTarget(input) {
   const program = getProgram(input);
 
-  if (program === null) {
+  if (!program.getWasSuccessful()) {
     return null;
   }
 
@@ -772,6 +191,9 @@ function minifyTarget(input) {
 }
 
 
+/**
+ * Minify the code in the editor.
+ */
 function executeMinify() {
   const minified = minifyTarget(getSourceCode());
 
@@ -784,14 +206,20 @@ function executeMinify() {
 }
 
 
+/**
+ * Format Plant code.
+ *
+ * @param input String containing Plant code to beautify.
+ * @return Beautified code or null if parsing failed.
+ */
 function beautifyTarget(input) {
   const program = getProgram(input);
 
-  if (program === null) {
+  if (!program.getWasSuccessful()) {
     return null;
   }
 
-  const components = program.accept(new BeautifyVisitor());
+  const components = program.getAst().accept(new BeautifyVisitor());
 
   let outputProgram = "";
   let indentSize = 0;
@@ -834,6 +262,9 @@ function beautifyTarget(input) {
 }
 
 
+/**
+ * Format the code in the editor.
+ */
 function executeBeautify() {
   const outputProgram = beautifyTarget(getSourceCode());
 
@@ -846,6 +277,9 @@ function executeBeautify() {
 }
 
 
+/**
+ * Load the code currently contained in the URI in the address bar into editor.
+ */
 function loadCodeFromUri() {
   const url = new URL(window.location.href);
   const code = url.searchParams.get('code');
@@ -855,7 +289,16 @@ function loadCodeFromUri() {
 }
 
 
-// Thanks https://stackoverflow.com/questions/24963246/ace-editor-simply-re-enable-command-after-disabled-it
+/**
+ * Enable and disable Ace editor commands.
+ *
+ * To better support accessibility, turn editor commands on and off like for
+ * tab support. Thanks stackoverflow.com/questions/24963246/ace-editor-simply-re-enable-command-after-disabled-it.
+ *
+ * @param editor The Ace editor to modify.
+ * @param name The name of the command to modify.
+ * @param enabled Flag indicating if the command should be enabled.
+ */
 function setCommandEnabled(editor, name, enabled) {
   var command = editor.commands.byName[name]
   if (!command.bindKeyOriginal)
@@ -874,6 +317,9 @@ function setCommandEnabled(editor, name, enabled) {
 }
 
 
+/**
+ * Initalize the editor.
+ */
 function initEditor() {
   editor = ace.edit("editor");
   editor.getSession().setUseWorker(false);
@@ -886,6 +332,7 @@ function initEditor() {
   editor.setTheme("ace/theme/monokai");
   editor.on("change", () => checkChange());
 
+  // Support keyboard escape for better accessibility
   const setTabsEnabled = (target) => {
     setCommandEnabled(editor, "indent", target);
     setCommandEnabled(editor, "outdent", target);
@@ -903,6 +350,9 @@ function initEditor() {
 }
 
 
+/**
+ * Initialize other UI event listeners.
+ */
 function initListeners() {
   document.getElementById(SHARE_ID).addEventListener("click", (event) => {
     alert("To share your work, simply copy and paste the current URL. Your code is written to the address bar as you type.");
@@ -928,11 +378,15 @@ function initListeners() {
 }
 
 
+/**
+ * Initalize web application.
+ */
 function init() {
   initEditor();
   initListeners();
   loadCodeFromUri();
 
+  // Start rendering program
   setInterval(() => { render(lastInstructions); }, 0.05);
 }
 
