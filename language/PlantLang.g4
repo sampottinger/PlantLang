@@ -1,4 +1,4 @@
-grammar TreeLang;
+grammar PlantLang;
 
 WHITE_SPACE: [ \u000B\t\r\n] -> channel(HIDDEN);
 
@@ -22,6 +22,8 @@ DEG_: 'd' 'e' 'g';
 
 PI_: 'p' 'i';
 
+PAR_ : '.';
+
 ITER_: 'i' 't' 'e' 'r';
 
 RAND_: 'r' 'a' 'n' 'd';
@@ -31,6 +33,8 @@ X_: 'm' 'o' 'u' 's' 'e' 'X';
 Y_: 'm' 'o' 'u' 's' 'e' 'Y';
 
 DUR_: 'd' 'u' 'r';
+
+MILLIS_: 'm' 'i' 'l' 'l' 'i' 's';
 
 SEC_: 's' 'e' 'c';
 
@@ -44,6 +48,12 @@ MONTH_: 'm' 'o' 'n' 't' 'h';
 
 YEAR_: 'y' 'e' 'a' 'r';
 
+SIN_: 's' 'i' 'n';
+
+SPEED_: 's' 'p' 'e' 'e' 'd';
+
+START_: 's' 't' 'a' 'r' 't';
+
 COLOR_: 'c' 'o' 'l' 'o' 'r';
 
 FLOWER_: 'f' 'l' 'o' 'w' 'e' 'r';
@@ -56,7 +66,15 @@ FLOAT_: [0-9]+ '.' [0-9]+;
 
 INTEGER_: [0-9]+;
 
-number: (ITER_ | RAND_ | X_ | Y_ | DUR_ | SEC_ | MIN_ | HOUR_ | DAY_ | MONTH_ | YEAR_)* ('-' | '+')? (FLOAT_ | INTEGER_);
+dynamic: (X_ | Y_ | DUR_ | SIN_ | RAND_);
+
+date: (MILLIS_ | SEC_ | MIN_ | HOUR_ | DAY_ | MONTH_ | YEAR_);
+
+iter: (PAR_)* ITER_;
+
+number: (iter | dynamic | date)* ('-' | '+')? (FLOAT_ | INTEGER_);
+
+speed: SPEED_ target=number (START_ number)?;
 
 stem: STEM_ distance=number;
 
@@ -74,6 +92,6 @@ branch: BRANCH_ '>' program ('>' program)*;
 
 frac: FRAC_ INTEGER_ '>' program;
 
-command: skip | stem | branch | frac | width | rotate | color | flower;
+command: skip | stem | branch | frac | width | rotate | color | flower | speed;
 
 program: command ('|' command)* ';';

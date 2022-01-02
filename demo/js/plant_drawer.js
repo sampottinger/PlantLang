@@ -7,13 +7,45 @@ const EXAMPLE_ID = "example";
 const SHARE_ID = "share";
 const EXAMPLE_LINK_CLASS = "ref-example";
 
-const toolkit = TreeLang.getToolkit();
+const toolkit = PlantLang.getToolkit();
 let lastInstructions = [];
 let lastCode = null;
 let editor = null;
 let mouseX = 0;
 let mouseY = 0;
-let startSeconds = new Date().getTime();
+let startTime = new Date().getTime();
+
+
+// Thanks https://stackoverflow.com/questions/6234773/can-i-escape-html-special-chars-in-javascript
+function escapeHtml(unsafe) {
+    return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+ }
+
+
+class SpeedSettings {
+
+  constructor(multiplier, offset) {
+    const self = this;
+    self._multiplier = multiplier;
+    self._offset = offset;
+  }
+
+  getMultiplier() {
+    const self = this;
+    return self._multiplier;
+  }
+
+  getOffset() {
+    const self = this;
+    return self._offset;
+  }
+
+}
 
 
 class State {
@@ -28,6 +60,7 @@ class State {
     self._curDate = curDate;
     self._indicies = [0];
     self._widths = [10];
+    self._speeds = [new SpeedSettings(1, 0)];
   }
 
   getCanvas() {
@@ -40,9 +73,13 @@ class State {
     return self._canvasContext;
   }
 
-  getIndex() {
+  getIndex(levels) {
     const self = this;
-    return self._indicies[self._indicies.length - 1];
+    if (levels >= self._indicies.length) {
+      return 0;
+    } else {
+      return self._indicies[self._indicies.length - 1 - levels];
+    }
   }
 
   setIndex(index) {
@@ -72,7 +109,17 @@ class State {
 
   getDuration() {
     const self = this;
-    return self._duration;
+
+    const speedSettings = self.getSpeedSettings();
+    const multiplier = speedSettings.getMultiplier();
+    const offset = speedSettings.getOffset();
+
+    return self._duration * multiplier + offset;
+  }
+
+  getMillisecond() {
+    const self = this;
+    return self._curDate.getMilliseconds();
   }
 
   getSecond() {
@@ -105,12 +152,23 @@ class State {
     return self._curDate.getYear();
   }
 
+  getSpeedSettings() {
+    const self = this;
+    return self._speeds[self._speeds.length - 1];
+  }
+
+  setSpeedSettings(newSpeedSettings) {
+    const self = this;
+    self._speeds[self._speeds.length - 1] = newSpeedSettings;
+  }
+
   save() {
     const self = this;
 
     self.getCanvasContext().save();
-    self._indicies.push(self.getIndex());
+    self._indicies.push(self.getIndex(0));
     self._widths.push(self.getWidth());
+    self._speeds.push(self.getSpeedSettings());
   }
 
   restore() {
@@ -119,12 +177,13 @@ class State {
     self.getCanvasContext().restore();
     self._indicies.pop();
     self._widths.pop();
+    self._speeds.pop();
   }
 
 }
 
 
-class CompileVisitor extends toolkit.TreeLangVisitor {
+class CompileVisitor extends toolkit.PlantLangVisitor {
 
   visitNumber(ctx) {
     const self = this;
@@ -138,9 +197,13 @@ class CompileVisitor extends toolkit.TreeLangVisitor {
 
     const multipliers = [(state) => bodyParsed];
 
-    const numIter = self._count(raw, "iter");
-    if (numIter > 0) {
-      multipliers.push((state) => Math.pow(state.getIndex(), numIter));
+    const iterMatches = raw.match(/(\.)*iter/g);
+
+    if (iterMatches !== null) {
+      iterMatches.forEach((match) => {
+        const numLevels = self._count(match, ".");
+        multipliers.push((state) => state.getIndex(numLevels));
+      });
     }
 
     const numRand = self._count(raw, "rand");
@@ -167,6 +230,19 @@ class CompileVisitor extends toolkit.TreeLangVisitor {
     const numDur = self._count(raw, "dur");
     if (numDur > 0) {
       multipliers.push((state) => Math.pow(state.getDuration(), numDur));
+    }
+
+    const numSin = self._count(raw, "sin");
+    if (numSin > 0) {
+      multipliers.push((state) => Math.pow(
+        Math.sin(state.getDuration() / Math.PI),
+        numSin
+      ));
+    }
+
+    const numMillis = self._count(raw, "millis");
+    if (numMillis > 0) {
+      multipliers.push((state) => Math.pow(state.getMillisecond(), numMillis));
     }
 
     const numSec = self._count(raw, "sec");
@@ -286,6 +362,23 @@ class CompileVisitor extends toolkit.TreeLangVisitor {
     return [futureFunc];
   }
 
+  visitSpeed(ctx) {
+    const self = this;
+
+    const numChildren = ctx.getChildCount();
+    const hasStart = numChildren > 2;
+    const futureTarget = ctx.target.accept(self);
+    const futureStart = hasStart ? ctx.getChild(3).accept(self) : (x) => 0;
+
+    const futureFunc = (state) => {
+      const target = futureTarget(state);
+      const start = futureStart(state);
+      state.setSpeedSettings(new SpeedSettings(target, start));
+    };
+
+    return [futureFunc];
+  }
+
   visitFlower(ctx) {
     const self = this;
 
@@ -386,7 +479,7 @@ class CodeComponent {
 }
 
 
-class BeautifyVisitor extends toolkit.TreeLangVisitor {
+class BeautifyVisitor extends toolkit.PlantLangVisitor {
 
   visitNumber(ctx) {
     const self = this;
@@ -397,7 +490,9 @@ class BeautifyVisitor extends toolkit.TreeLangVisitor {
       .replace(/rand\s*/g, "rand ")
       .replace(/mouseX\s*/g, "mouseX ")
       .replace(/mouseY\s*/g, "mouseY ")
+      .replace(/sin\s*/g, "sin ")
       .replace(/dur\s*/g, "dur ")
+      .replace(/millis\s*/g, "millis ")
       .replace(/sec\s*/g, "sec ")
       .replace(/min\s*/g, "min ")
       .replace(/hour\s*/g, "hour ")
@@ -457,6 +552,22 @@ class BeautifyVisitor extends toolkit.TreeLangVisitor {
     }
 
     const immediate = core + transAppend;
+    return [new CodeComponent("simple", immediate)];
+  }
+
+  visitSpeed(ctx) {
+    const self = this;
+
+    const core = "speed " + ctx.target.accept(self);
+    const numChildren = ctx.getChildCount();
+
+    let startAppend = "";
+    if (numChildren > 2) {
+      const numberText = ctx.getChild(3).accept(self);
+      startAppend = " start " + numberText;
+    }
+
+    const immediate = core + startAppend;
     return [new CodeComponent("simple", immediate)];
   }
 
@@ -535,15 +646,22 @@ function getProgram(input) {
     return null;
   }
 
-  const chars = new toolkit.antlr4.InputStream(input);
-  const lexer = new toolkit.TreeLangLexer(chars);
-  lexer.removeErrorListeners();
-
-  const tokens = new toolkit.antlr4.CommonTokenStream(lexer);
-  const parser = new toolkit.TreeLangParser(tokens);
   const errors = [];
 
-  parser.buildParseTrees = true;
+  const chars = new toolkit.antlr4.InputStream(input);
+  const lexer = new toolkit.PlantLangLexer(chars);
+  lexer.removeErrorListeners();
+  lexer.addErrorListener({
+    syntaxError: (recognizer, offendingSymbol, line, column, msg, err) => {
+      const result = `(line ${line}, col ${column}): ${msg}`;
+      errors.push(result);
+    }
+  });
+
+  const tokens = new toolkit.antlr4.CommonTokenStream(lexer);
+  const parser = new toolkit.PlantLangParser(tokens);
+
+  parser.buildParsePlants = true;
   parser.removeErrorListeners();
   parser.addErrorListener({
     syntaxError: (recognizer, offendingSymbol, line, column, msg, err) => {
@@ -553,7 +671,9 @@ function getProgram(input) {
   });
 
   const program = parser.program();
-  document.getElementById(STATUS_DISPLAY_ID).textContent = errors.join(". ");
+  const errorsEscaped = errors.map(escapeHtml);
+  const errorsHtml = errorsEscaped.join(".<br> ");
+  document.getElementById(STATUS_DISPLAY_ID).innerHTML = errorsHtml;
 
   return errors.length == 0 ? program : null;
 }
@@ -573,7 +693,7 @@ function render(instructions) {
   const canvas = document.getElementById(CANVAS_ID);
   const canvasContext = canvas.getContext('2d');
 
-  const duration = ((new Date().getTime()) - startSeconds) / 1000;
+  const duration = ((new Date().getTime()) - startTime) / 1000;
   const state = new State(
     canvas,
     canvasContext,

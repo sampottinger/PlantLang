@@ -21,9 +21,9 @@ module.exports = {
     fallback: { fs: false }
   },
   output: {
-    filename: 'treelang.js',
+    filename: 'plantlang.js',
     path: path.resolve(__dirname, 'static'),
-    library: 'TreeLang',
+    library: 'PlantLang',
     libraryTarget: 'var'
   }
 };

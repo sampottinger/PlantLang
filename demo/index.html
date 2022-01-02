@@ -1,7 +1,7 @@
 <html>
   <head>
-    <title>Tree: A Toy Language for Drawing Plants</title>
-    <link rel="stylesheet" href="./css/tree_drawer.css">
+    <title>Plant: A Toy Language for Drawing Plants</title>
+    <link rel="stylesheet" href="./css/plant_drawer.css">
   </head>
   <body>
     <div id="skipLinks">
@@ -10,12 +10,12 @@
 
     <header>
       <div class="top">
-        <div class="section"><h1>Tree</h1></div>
+        <div class="section"><h1>Plant</h1></div>
         <div class="section links"><a href="/#editorArea">Editor</a> / <a href="/#languageReference">Docs</a> / <a href="/about">About</a> / <a href="/privacy">Privacy</a> / <a href="/code">Code</a></div>
       </div>
 
       <div class="description">
-        <span class="summary">Tree is a toy language for drawing plants with primitives. <a href="/?code=skip100|color%23333333|width5abs|stem20|branch>rotate-45deg|stem15%3B>stem70|rotate-95deg|frac4>width0.7rel|rotateiter47deg|stem20|rotate-50deg|frac3>width0.6rel|rotateiter30deg|stem10|rotate-22.5deg|frac3>rotateiter15deg|width0.3rel|stem5|color%23C0C0C0trans0.3|flower8%3B%3B%3B%3B%3B" id="example">See example</a> or more info about <a href="#languageReference">how to write Tree code</a>.</span> It demonstrates <a href="/about#why">why one might want to create a domain specific language</a> and <a href="/about#how">how to make new languages</a> using <a href="/about#oss">open source tools</a>. Open source and privacy respecting. Write and share your Tree programs below.
+        <span class="summary">Plant is a toy language for drawing plants with primitives. <a href="/?code=skip100|color%23333333|width5abs|stem20|branch>rotate-45deg|stem15%3B>stem70|rotate-95deg|frac4>width0.7rel|rotateiter47deg|speed2.5start1|rotatesin-10deg|stem20|rotate-50deg|frac3>width0.6rel|rotateiter30deg|stem10|rotate-22.5deg|frac3>rotateiter15deg|width0.3rel|stem5|color%23C5C5C5trans0.3|flower8|frac3>rotateiter20deg|color%23C0C0C0trans0.2|speed2.5|rotatesin50deg|stem10|flower3%3B%3B%3B%3B%3B%3B" id="example">See example</a> or more info about <a href="#languageReference">how to write Plant code</a>.</span> It demonstrates <a href="/about#why">why one might want to create a domain specific language</a> and <a href="/about#how">how to make new languages</a> using <a href="/about#oss">open source tools</a>. Open source and privacy respecting. Write and share your Plant programs below.
       </div>
     </header>
 
@@ -43,33 +43,38 @@
 
     <div class="language-details">
       <details>
+       <summary>intro</summary>
+       <div class="expansion">A program consists of a series of commands where whitespace is ignored. For a quick hello world, consider <a href="/?code=skip100|stem100|rotate45deg|skip20|stem20%3B" class="ref-example">skip 100 | stem 100 | rotate 45 deg | skip 20 | stem 20;</a> which moves forward 100 pixels, draws for 100 pixels, rotates 45 degrees, moves forward 20 pixels, and draws for 20 pixels. Examples are links which, when clicked on, are beautified and run. The rest of the sections in this language reference include examples to demonstrate different language features.</div>
+      </details>
+
+      <details>
        <summary>stem</summary>
-       <div class="expansion">Command which moves forward from the current position, drawing using the current color and width at the current angle. Requires a distance. Example <a href="/?code=stem100%3B" class="ref-example">stem 100;</a> draws forward 100 pixels. The number provided can use "iter" and "rand" as described in the <a href="#number">number section</a>.</div>
+       <div class="expansion">Command which moves forward from the current position, drawing using the current color and width at the current angle. Requires a distance. Example <a href="/?code=stem100%3B" class="ref-example">stem 100;</a> draws forward 100 pixels. The number provided can use number modifiers as described in the <a href="#number">number section</a>.</div>
       </details>
 
       <details>
        <summary>skip</summary>
-       <div class="expansion">Command which moves forward from the current position at the current angle without drawing. Requires a distance. Example <a href="/?code=stem100|skip100|stem50%3B" class="ref-example">stem 100 | skip 100 | stem 50;</a> draws forward 100 pixels, skips 100 pixels, and draws 50 pixels. The number provided can use "iter" and "rand" as described in the <a href="#number">number section</a>.</div>
+       <div class="expansion">Command which moves forward from the current position at the current angle without drawing. Requires a distance. Example <a href="/?code=stem100|skip100|stem50%3B" class="ref-example">stem 100 | skip 100 | stem 50;</a> draws forward 100 pixels, skips 100 pixels, and draws 50 pixels. The number provided can use number modifiers as described in the <a href="#number">number section</a>.</div>
       </details>
 
       <details>
        <summary>width</summary>
-       <div class="expansion">Command which changes the width with which the stem is drawn. Requires a width either with "abs" or "rel" for absolute pixels or relative multiplier. Example <a href="/?code=width10abs|stem50|width0.5rel|stem40%3B" class="ref-example">width 10 abs | stem 50 | width 0.5 rel | stem 40;</a> draws 50 pixels at width 10 and 40 pixels at width 5. The number provided can use "iter" and "rand" as described in the <a href="#number">number section</a>.</div>
+       <div class="expansion">Command which changes the width with which the stem is drawn. Requires a width either with "abs" or "rel" for absolute pixels or relative multiplier. Example <a href="/?code=width10abs|stem50|width0.5rel|stem40%3B" class="ref-example">width 10 abs | stem 50 | width 0.5 rel | stem 40;</a> draws 50 pixels at width 10 and 40 pixels at width 5. The number provided can use number modifiers as described in the <a href="#number">number section</a>.</div>
       </details>
 
       <details>
        <summary>rotate</summary>
-       <div class="expansion">Command which changes the rotation used for future commands. Requires an amount followed by "deg" or "pi" for degress or radians (expressed as multiple of pi). Example <a href="/?code=stem50|rotate0.5pi|stem40%3B" class="ref-example">stem 50 | rotate 0.5 pi | stem 40;</a> draws a right angle. The number provided can use "iter" and "rand" as described in the <a href="#number">number section</a>.</div>
+       <div class="expansion">Command which changes the rotation used for future commands. Requires an amount followed by "deg" or "pi" for degress or radians (expressed as multiple of pi). Example <a href="/?code=stem50|rotate0.5pi|stem40%3B" class="ref-example">stem 50 | rotate 0.5 pi | stem 40;</a> draws a right angle. The number provided can use number modifiers as described in the <a href="#number">number section</a>.</div>
       </details>
 
       <details>
        <summary>color</summary>
-       <div class="expansion">Command which changes the color used for future commands. Requires a hex code followed by an optional transparency value from 0 (transparent) to 1 (opaque). Example <a href="/?code=color%23505050|stem50|color%23505050trans0.7|stem40%3B" class="ref-example">color #505050 | stem 50 | color #505050 trans 0.7 | stem 40;</a> draws two grey segments with the second at 70% opacity. The number for transparency can use "iter" and "rand" as described in the <a href="#number">number section</a>.</div>
+       <div class="expansion">Command which changes the color used for future commands. Requires a hex code followed by an optional transparency value from 0 (transparent) to 1 (opaque). Example <a href="/?code=color%23505050|stem50|color%23505050trans0.7|stem40%3B" class="ref-example">color #505050 | stem 50 | color #505050 trans 0.7 | stem 40;</a> draws two grey segments with the second at 70% opacity. The number for transparency can use number modifiers as described in the <a href="#number">number section</a>.</div>
       </details>
 
       <details>
        <summary>flower</summary>
-       <div class="expansion">Command which draws a circle at the current position using the current color. Requires a radius. Example <a href="/?code=stem50|flower10%3B" class="ref-example">stem 50 | flower 10;</a> draws a circle with radius 10 pixels at the end of a rectangle of length 50 pixels. The number for radius can use "iter" and "rand" as described in the <a href="#number">number section</a>.</div>
+       <div class="expansion">Command which draws a circle at the current position using the current color. Requires a radius. Example <a href="/?code=stem50|flower10%3B" class="ref-example">stem 50 | flower 10;</a> draws a circle with radius 10 pixels at the end of a rectangle of length 50 pixels. The number for radius can use number modifiers as described in the <a href="#number">number section</a>.</div>
       </details>
 
       <details>
@@ -85,33 +90,35 @@
       <div id="number">
         <details>
           <summary>static number modifiers</summary>
-          <div class="expansion">Numbers have a number of modifiers which can be used which are the same on each frame of the program:
+          <div class="expansion">Numbers have a number of modifiers which can be used which are the same on each frame of the program. Modifiers can be stacked so one can have "rotate iter rand 10 deg" for example.
             <ul>
-              <li>The iter modifier can be used anywhere you have a number and will cause the value to be multiplied by the branch index. Note that branch indicies start at 0. <a href="/?code=color%2300C000|stem100|rotate-80deg|frac5>width0.8rel|color%2300C000trans0.5|rotateiter35deg|stem50|rotate-60deg|frac10>width0.4rel|color%230000C0trans0.3|rotateiter20deg|stem10%3B%3B%3B" class="reference-example">color #00C000 | stem 100 | rotate -80 deg | frac 5 > width 0.8 rel | color #00C000 trans 0.5 | rotate iter 35 deg | stem 50 | rotate -60 deg | frac 10 > width 0.4 rel | color #0000C0 trans 0.3 | rotate iter 20 deg | stem 10; ; ;</a> is an example of a frac demonstrating how iter is used. Multiple iter will multiply the index multiple times like in .</li>
-              <li>The rand modifier randomly chooses between 0 and 1 before multiplying to the number given. Example . Specifying rand multiple times will cause multiple random numbers to be generated and multiplied.</li>
+              <li>The iter modifier will cause the value to be multiplied by the branch index. Note that branch indicies start at 0. <a href="/?code=color%2300C000|stem100|rotate-80deg|frac5>width0.8rel|color%2300C000trans0.5|rotateiter35deg|stem50|rotate-60deg|frac10>width0.4rel|color%230000C0trans0.3|rotateiter20deg|stem10%3B%3B%3B" class="reference-example">color #00C000 | stem 100 | rotate -80 deg | frac 5 > width 0.8 rel | color #00C000 trans 0.5 | rotate iter 35 deg | stem 50 | rotate -60 deg | frac 10 > width 0.4 rel | color #0000C0 trans 0.3 | rotate iter 20 deg | stem 10; ; ;</a> is an example of a frac demonstrating how iter is used. Multiple iter will multiply the index multiple times. One may traverse upwards by prepending a period so ".iter" gets the parent's branch index and "..iter" gets the grandparent. For example, <a href="/?code=stem100|frac5>rotateiter-20deg|width0.5rel|stem100|frac5>rotateiter-20deg|width0.5rel|stem.iter10%3B%3B%3B">stem 100 | frac 5 > rotate iter -20 deg | width 0.5 rel | stem 100 | frac 5 > rotate iter -20 deg | width 0.5 rel | stem .iter 10; ; ;</a> has stems which use their parent's index.</li>
+              <li>The rand modifier randomly chooses between 0 and 1 before multiplying to the number given. Example <a href="/?code=stem200|branch>rotate-40deg|stemrand100%3B>rotate40deg|stemrand100%3B%3B">stem 200 | branch > rotate -40 deg | stem rand 100; > rotate 40 deg | stem rand100; ;</a> which creates two branches of random length. Specifying rand multiple times will cause multiple random numbers to be generated and multiplied.</li>
             </ul>
           </div>
         </details>
 
         <details>
           <summary>dynamic number modifiers</summary>
-          <div class="expansion">Numbers have a number of modifiers which can be used which can change on each frame of the program:
+          <div class="expansion">Numbers have a number of modifiers which can be used which can change on each frame of the program. Modifiers can be stacked so one can have "rotate sin dur 10 deg" for example.
             <ul>
               <li>The mouseX and mouseY modifiers multiply by the current x and y position of the mouse respectively. Example <a href="/?code=stem200|rotatemouseX1deg|stem100%3B">stem 200 | rotate mouseX 1 deg | stem 100;</a> which rotates a stem based on mouse horizontal position. Specifying mouseX or mouseY multiple times will cause them to be multiplied multiple times.</li>
-              <li>The dur modifier multiplies by the number of seconds since the program started. Example <a href="/?code=stem200|rotatedur100deg|stem100%3B">stem 200 | rotate dur 100 deg | stem 100;</a> shows a rotating stem. Specifying dur multiple times causes it to be multiplied multiple times.</li>
+              <li>The dur modifier multiplies by the duration since the program started. Example <a href="/?code=stem200|rotatedur100deg|stem100%3B">stem 200 | rotate dur 100 deg | stem 100;</a> shows a rotating stem. Specifying dur multiple times causes it to be multiplied multiple times. Duration is modifable by <a href="#speed">speed</a>.</li>
+              <li>The sin modifier multiplies by the sin of duration since the program started divided by PI. Example <a href="/?code=stem200|rotatesin100deg|stem100%3B">stem 200 | rotate sin 100 deg | stem 100;</a> shows a rotating stem. Specifying sin multiple times causes it to be multiplied multiple times.</li>
             </ul>
           </div>
         </details>
         <details>
           <summary>date number modifiers</summary>
-          <div class="expansion">Numbers have a number of modifiers which can be used which can change based on date of frame render:
+          <div class="expansion">Numbers have a number of modifiers which can be used which can change based on date of frame render. Example <a href="/?code=color%23505050|stem200|color%23505050trans0.5|rotateyear1deg|stem30|rotatemonth30deg|stem30|rotateday11.6deg|stem30|rotatehour15deg|stem30|rotateminute15deg|stem30|rotatesecond15deg|stem30%3B">color #505050 | stem 200 | color #505050 trans 0.5 | rotate year 1 deg | stem 30 | rotate month 30 deg | stem 30 | rotate day 1 1.6 deg | stem 30 | rotate hour 15 deg | stem 30 | rotate minute 15 deg | stem 30 | rotate second 15 deg | stem 30;</a>. Modifiers can be stacked so one can have "rotate sec millis 10 deg" for example.
             <ul>
-              <li>The sec modifier multiplies by the current second of the minute (0 indexed). Example <a href="/?code=color%23505050|stem200|color%23505050trans0.5|rotateyear1deg|stem30|rotatemonth30deg|stem30|rotateday11.6deg|stem30|rotatehour15deg|stem30|rotateminute15deg|stem30|rotatesecond15deg|stem30%3B">color #505050 | stem 200 | color #505050 trans 0.5 | rotate year 1 deg | stem 30 | rotate month 30 deg | stem 30 | rotate day 1 1.6 deg | stem 30 | rotate hour 15 deg | stem 30 | rotate minute 15 deg | stem 30 | rotate second 15 deg | stem 30;</a>. Specifying sec multiple times causes it to be multiplied multiple times.</li>
-              <li>The min modifier multiplies by the current minute of the hour (0 indexed). Example <a href="/?code=color%23505050|stem200|color%23505050trans0.5|rotateyear1deg|stem30|rotatemonth30deg|stem30|rotateday11.6deg|stem30|rotatehour15deg|stem30|rotateminute15deg|stem30|rotatesecond15deg|stem30%3B">color #505050 | stem 200 | color #505050 trans 0.5 | rotate year 1 deg | stem 30 | rotate month 30 deg | stem 30 | rotate day 1 1.6 deg | stem 30 | rotate hour 15 deg | stem 30 | rotate minute 15 deg | stem 30 | rotate second 15 deg | stem 30;</a>. Specifying min multiple times causes it to be multiplied multiple times.</li>
-              <li>The hour modifier multiplies by the current hour of the day (0 indexed). Example <a href="/?code=color%23505050|stem200|color%23505050trans0.5|rotateyear1deg|stem30|rotatemonth30deg|stem30|rotateday11.6deg|stem30|rotatehour15deg|stem30|rotateminute15deg|stem30|rotatesecond15deg|stem30%3B">color #505050 | stem 200 | color #505050 trans 0.5 | rotate year 1 deg | stem 30 | rotate month 30 deg | stem 30 | rotate day 1 1.6 deg | stem 30 | rotate hour 15 deg | stem 30 | rotate minute 15 deg | stem 30 | rotate second 15 deg | stem 30;</a>. Specifying hour multiple times causes it to be multiplied multiple times.</li>
-              <li>The day modifier multiplies by the current day of month (0 indexed). Example <a href="/?code=color%23505050|stem200|color%23505050trans0.5|rotateyear1deg|stem30|rotatemonth30deg|stem30|rotateday11.6deg|stem30|rotatehour15deg|stem30|rotateminute15deg|stem30|rotatesecond15deg|stem30%3B">color #505050 | stem 200 | color #505050 trans 0.5 | rotate year 1 deg | stem 30 | rotate month 30 deg | stem 30 | rotate day 1 1.6 deg | stem 30 | rotate hour 15 deg | stem 30 | rotate minute 15 deg | stem 30 | rotate second 15 deg | stem 30;</a>. Specifying day multiple times causes it to be multiplied multiple times.</li>
-              <li>The month modifier multiplies by the current month of year (0 indexed). Example <a href="/?code=color%23505050|stem200|color%23505050trans0.5|rotateyear1deg|stem30|rotatemonth30deg|stem30|rotateday11.6deg|stem30|rotatehour15deg|stem30|rotateminute15deg|stem30|rotatesecond15deg|stem30%3B">color #505050 | stem 200 | color #505050 trans 0.5 | rotate year 1 deg | stem 30 | rotate month 30 deg | stem 30 | rotate day 1 1.6 deg | stem 30 | rotate hour 15 deg | stem 30 | rotate minute 15 deg | stem 30 | rotate second 15 deg | stem 30;</a>. Specifying month multiple times causes it to be multiplied multiple times.</li>
-              <li>The year modifier multiplies by the current year (like 2022). Example <a href="/?code=color%23505050|stem200|color%23505050trans0.5|rotateyear1deg|stem30|rotatemonth30deg|stem30|rotateday11.6deg|stem30|rotatehour15deg|stem30|rotateminute15deg|stem30|rotatesecond15deg|stem30%3B">color #505050 | stem 200 | color #505050 trans 0.5 | rotate year 1 deg | stem 30 | rotate month 30 deg | stem 30 | rotate day 1 1.6 deg | stem 30 | rotate hour 15 deg | stem 30 | rotate minute 15 deg | stem 30 | rotate second 15 deg | stem 30;</a>. Specifying year multiple times causes it to be multiplied multiple times.</li>
+              <li>The millis modifier multiplies by the current milliseconds of the second (0 indexed). Specifying sec multiple times causes it to be multiplied multiple times.</li>
+              <li>The sec modifier multiplies by the current second of the minute (0 indexed). Specifying sec multiple times causes it to be multiplied multiple times.</li>
+              <li>The min modifier multiplies by the current minute of the hour (0 indexed). Specifying min multiple times causes it to be multiplied multiple times.</li>
+              <li>The hour modifier multiplies by the current hour of the day (0 indexed). Specifying hour multiple times causes it to be multiplied multiple times.</li>
+              <li>The day modifier multiplies by the current day of month (0 indexed). Specifying day multiple times causes it to be multiplied multiple times.</li>
+              <li>The month modifier multiplies by the current month of year (0 indexed). Specifying month multiple times causes it to be multiplied multiple times.</li>
+              <li>The year modifier multiplies by the current year (like 2022). Specifying year multiple times causes it to be multiplied multiple times.</li>
             </ul>
           </div>
         </details>
@@ -121,6 +128,6 @@
 
   <script type="text/javascript" src="./js/ace.min.js"></script>
 
-  <script type="text/javascript" src="./js/tree_lang.js"></script>
-  <script type="text/javascript" src="./js/tree_drawer.js"></script>
+  <script type="text/javascript" src="./js/plant_lang.js"></script>
+  <script type="text/javascript" src="./js/plant_drawer.js"></script>
 </html>
