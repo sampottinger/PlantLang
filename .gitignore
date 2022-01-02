@@ -1,5 +1,6 @@
 *.jar
 .DS_Store
+intermediate/PlantLang.interp
 intermediate/PlantLang.tokens
 intermediate/PlantLangLexer.interp
 intermediate/PlantLangLexer.js

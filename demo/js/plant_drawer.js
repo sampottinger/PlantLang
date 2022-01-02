@@ -23,6 +23,10 @@ function getSourceCode() {
  * @return A ParseResult.
  */
 function getProgram(input) {
+  if (input === null) {
+    return new ParseResult(null, []);
+  }
+
   if (input.replaceAll("\n", "").replaceAll(" ", "") === "") {
     document.getElementById(STATUS_DISPLAY_ID).textContent = "Ready!";
     return new ParseResult(null, []);
@@ -160,7 +164,7 @@ function updateHistory(replace) {
   const original = getSourceCode();
   const minified = original.replace(/\s+/g, "");
 
-  const currentUrl = window.location.href;
+  const currentUrl = window.location.href.split("#")[0];
   const urlStart = currentUrl.split("?")[0];
   const codePiece = "?code=" + encodeURIComponent(minified);
 

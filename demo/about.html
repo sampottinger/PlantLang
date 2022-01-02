@@ -15,9 +15,35 @@
       </div>
 
       <div class="description">
-        Plant is a toy language for recursive drawing with primitives which is especially useful for drawing plants. Plant is used for creative drawing and for demoing how to build a simple language in ANTLR runnable in browser via Javascript. This page describes Plant at a deeper level both for those hoping to use Plant and those seeking to learn from it to make their own domain specific languages.
+        Plant is a toy language for branching drawing with primitives which is especially useful for drawing plants. In addition to creative drawing, it demos how to build a simple language in ANTLR runnable in browser via Javascript. This page describes Plant at a deeper level both for those hoping to use Plant and those seeking to learn from it to make their own domain specific languages. <a href="https://gleap.org">Plant is built by Sam Pottinger</a>.
       </div>
     </header>
+
+    <div class="docSection" id="#oss">
+      <h2>Things used in Plant</h2>
+      <p>
+        Plant as a language draws inspiration from <a href="https://en.wikipedia.org/wiki/Logo_(programming_language)">Logo</a>, <a href="https://processing.org/">Processing</a>, and shell scripting. It uses as close to vanilla JS as possible. It also uses the following libraries:
+
+        <ul>
+          <li><a href="https://www.antlr.org/index.html">ANTLR</a> under the <a href="https://www.antlr.org/license.html">BSD license</a></li>
+          <li><a href="https://ace.c9.io/">Ace Editor</a> under the <a href="https://github.com/ajaxorg/ace/blob/master/LICENSE">BSD license</a></li>
+        </ul>
+      </p>
+    </div>
+
+    <div class="docSection" id="#why">
+      <h2>Why Plant</h2>
+      <p>
+        Plant isn't really meant to be practical. It's just a way to draw things with lots of branching or fractal-like structures. It also is meant to be a a very simple language which shows why "<a href="https://freecontent.manning.com/the-what-and-why-of-domain-specific-lanugages/">domain specific languages</a>" are important. These are languages which aren't meant to necessarily be turing complete (can't do everything a normal langugae would do) but accomplish some very specific task well. The "shape" of languages (<a href="http://worrydream.com/MediaForThinkingTheUnthinkable/">like any tool</a>) changes the way we think about how they are used and what they are used on. Plant tries to show how, by changing the way you describe a drawing, it makes it easier to think in branching structures. This DSL, like others, attempts to make it more "efficient" to work through a specific problem compared to general purpose languages.
+      </p>
+    </div>
+
+    <div class="docSection" id="#how">
+      <h2>How is Plant built?</h2>
+      <p>
+        Plant is meant to inpsire others to build their own domain specific languages. Therefore, it has a very <a href="https://github.com/sampottinger/PlantLang/blob/main/language/PlantLang.g4">simple ANTLR language definition</a>. This project <a href="https://github.com/sampottinger/PlantLang/tree/main/intermediate">compiles its JS alongside the ANTLR JS runtime</a> using a standard node stack. Finally, <a href="https://github.com/sampottinger/PlantLang/tree/main/demo">vanilla JS runs an online editor</a>.
+      </p>
+    </div>
 
   </body>
 </html>
