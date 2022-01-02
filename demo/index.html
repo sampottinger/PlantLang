@@ -78,7 +78,7 @@
     <div class="language-details">
       <details>
        <summary>intro</summary>
-       <div class="expansion">A program consists of a series of commands where whitespace is ignored. For a quick hello world, consider <a href="/?author=sampottinger&name=example&license=CC0&code=skip100|stem100|rotate45deg|skip20|stem20%3B" class="ref-example">skip 100 | stem 100 | rotate 45 deg | skip 20 | stem 20;</a> which moves forward 100 pixels, draws for 100 pixels, rotates 45 degrees, moves forward 20 pixels, and draws for 20 pixels. Examples are links which, when clicked on, are beautified and run. The rest of the sections in this language reference include examples to demonstrate different language features.</div>
+       <div class="expansion">A program consists of a series of commands where whitespace is ignored. For a quick hello world, consider <a href="/?author=sampottinger&name=example&license=CC0&code=skip100|stem100|rotate45deg|skip20|stem20%3B" class="ref-example">skip 100 | stem 100 | rotate 45 deg | skip 20 | stem 20;</a> which moves forward 100 pixels, draws for 100 pixels, rotates 45 degrees, moves forward 20 pixels, and draws for 20 pixels. Examples are links which, when clicked on, are beautified and run. The rest of the sections in this language reference include examples to demonstrate different language features. Be sure to check out <a href="#branch">branch</a> and <a href="#frac">frac</a> which are the heart of what makes Plant special.</div>
       </details>
 
       <details>
@@ -111,12 +111,12 @@
        <div class="expansion">Command which draws a circle at the current position using the current color. Requires a radius. Example <a href="/?author=sampottinger&name=example&license=CC0&code=stem50|flower10%3B" class="ref-example">stem 50 | flower 10;</a> draws a circle with radius 10 pixels at the end of a rectangle of length 50 pixels. The number for radius can use number modifiers as described in the <a href="#number">number section</a>.</div>
       </details>
 
-      <details>
+      <details id="branch">
        <summary>branch</summary>
        <div class="expansion">Creates one or more "branches" each with their own code where changes made within a branch to position, color, width, and rotation only apply within that branch and its sub-branches. Each branch starts with a forward cheveron (">") and ends with a semicolon (";"). Example <a href="/?author=sampottinger&name=example&license=CC0&code=color%2300A0A0|stem100|branch>color%230000A0trans0.5|rotate-40deg|stem30%3B>color%2300A000trans0.5|rotate10deg|stem50|branch>rotate-50deg|stem20%3B>rotate50deg|stem20%3B%3B%3B" class="ref-example">color #00A0A0 | stem 100 | branch > color #0000A0 trans 0.5 | rotate -40 deg | stem 30; > color #00A000 trans0.5 | rotate 10 deg | stem 50 | branch > rotate -50 deg | stem 20; > rotate 50 deg | stem20; ; ;</a> draws two branches of different colors and angles with one branch having another sub-branch. Note that "iter" refers to the index of the branch as described in the <a href="#iter">iter section</a>.</div>
       </details>
 
-      <details>
+      <details id="frac">
        <summary>frac</summary>
        <div class="expansion">Creates one or more "branches" each with the same code where changes made within a branch to position, color, width, and rotation only apply within that branch and its sub-branches. The branch starts with a forward cheveron (">") and ends with a semicolon (";"). Example <a href="/?author=sampottinger&name=example&license=CC0&code=color%2300C000|stem50|width0.5rel|stem10|rotate-70deg|frac10>width0.5rel|color%230000C0transiter0.1|rotateiter9deg|stem10|stemiter8|flower10%3B%3B" class="ref-example">color #00C000 | stem 50 | width 0.5 rel | stem 10 | rotate -70 deg | frac 10 > width 0.5 rel | color #0000C0 trans iter 0.1 | rotate iter 9 deg | stem 10 | stem iter 8 | flower 10; ;</a> draws a fract with 10 branches. Note that "iter" refers to the index of the branch as described in the <a href="#iter">iter section</a>.</div>
       </details>
