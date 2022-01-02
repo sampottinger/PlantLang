@@ -13,6 +13,9 @@ Simply copy the [antlr jar](https://www.antlr.org/download/antlr-4.9.3-complete.
 ## Language Reference
 See <a href="https://plantlang.ink#languageReference">https://plantlang.ink#languageReference</a>.
 
+## Extend
+To extend Plant, [see more about how it is built](https://plantlang.ink/about#how).
+
 ## License
 MIT Licensed. See LICENSE.txt.
 
