@@ -25,7 +25,7 @@ function getSourceCode() {
 function getProgram(input) {
   if (input.replaceAll("\n", "").replaceAll(" ", "") === "") {
     document.getElementById(STATUS_DISPLAY_ID).textContent = "Ready!";
-    return null;
+    return new ParseResult(null, []);
   }
 
   const errors = [];
@@ -70,13 +70,13 @@ function getProgram(input) {
  */
 function compile() {
   const program = getProgram(getSourceCode());
-  if (!program.getWasSuccessful()) {
-    return null;
-  }
-
   const errorsEscaped = program.getErrors().map(escapeHtml);
   const errorsHtml = errorsEscaped.join(".<br> ");
   document.getElementById(STATUS_DISPLAY_ID).innerHTML = errorsHtml;
+
+  if (!program.getWasSuccessful()) {
+    return null;
+  }
 
   return program.getAst().accept(new CompileVisitor());
 }
@@ -151,10 +151,10 @@ function checkChange() {
  *   record is made.
  */
 function updateHistory(replace) {
-  const program = getProgram(getSourceCode());
+  let program = getProgram(getSourceCode());
 
   if (!program.getWasSuccessful()) {
-    return;
+    return null;
   }
 
   const original = getSourceCode();
@@ -162,7 +162,18 @@ function updateHistory(replace) {
 
   const currentUrl = window.location.href;
   const urlStart = currentUrl.split("?")[0];
-  const fullUrl = "?code=" + encodeURIComponent(minified);
+  const codePiece = "?code=" + encodeURIComponent(minified);
+
+  const name = document.getElementById("nameInput").value;
+  const namePiece = "&name=" + encodeURIComponent(name);
+
+  const author = document.getElementById("authorInput").value;
+  const authorPiece = "&author=" + encodeURIComponent(author);
+
+  const license = document.getElementById("licenseInput").value;
+  const licensePiece = "&license=" + encodeURIComponent(license);
+
+  const fullUrl = urlStart + codePiece + namePiece + authorPiece + licensePiece;
 
   if (replace) {
     window.history.replaceState('', '', fullUrl);
@@ -279,13 +290,62 @@ function executeBeautify() {
 
 /**
  * Load the code currently contained in the URI in the address bar into editor.
+ *
+ * Load the code currently contained in the URI in the address bar into editor
+ * along with metadata;
  */
 function loadCodeFromUri() {
   const url = new URL(window.location.href);
-  const code = url.searchParams.get('code');
+  const code = url.searchParams.get("code");
   const codeBeautified = beautifyTarget(code);
 
-  editor.setValue(codeBeautified);
+  let name = url.searchParams.get("name");
+  if (name === null) {
+    name = "Untitled";
+  }
+
+  let author = url.searchParams.get("author");
+  if (author === null) {
+    author = "unknown";
+  }
+
+  let license = url.searchParams.get("license");
+  if (license === null) {
+    license = "Proprietary";
+  }
+
+  setMetadata(name, author, license);
+
+  if (codeBeautified !== null) {
+    editor.setValue(codeBeautified);
+  }
+}
+
+
+/**
+ * Update code metadata.
+ *
+ * @param name The name of the program.
+ * @param author The name of the author.
+ * @param license The name of the license.
+ */
+function setMetadata(name, author, license) {
+  document.getElementById("nameInput").value = name;
+  document.getElementById("authorInput").value = author;
+  document.getElementById("licenseInput").value = license;
+
+  document.getElementById("nameDisplay").textContent = name;
+  document.getElementById("authorDisplay").textContent = author;
+  document.getElementById("licenseDisplay").textContent = license;
+
+  let targetUrl = "/no_license.txt";
+  let candidateUrl = LICENSE_LINKS[license];
+  if (candidateUrl !== undefined) {
+    targetUrl = candidateUrl;
+  }
+  document.getElementById("licenseLink").href = targetUrl;
+
+  updateHistory(true);
 }
 
 
@@ -367,6 +427,28 @@ function initListeners() {
   document.getElementById(BEAUTIFY_ID).addEventListener("click", (event) => {
     executeBeautify();
     event.preventDefault();
+  });
+
+  document.getElementById(EDIT_METADATA_ID).addEventListener("click", (e) => {
+    document.getElementById(AUTHOR_EDITOR_ID).style.display = "block";
+    document.getElementById(AUTHOR_INFO_ID).style.display = "none";
+  });
+
+  document.getElementById(FINISH_METADATA_ID).addEventListener("click", (e) => {
+    if (!getProgram(getSourceCode()).getWasSuccessful()) {
+      alert("Please fix code issues before updating metadata.");
+      e.preventDefault();
+      return;
+    }
+
+    const name = document.getElementById("nameInput").value;
+    const author = document.getElementById("authorInput").value;
+    const license = document.getElementById("licenseInput").value;
+
+    setMetadata(name, author, license);
+
+    document.getElementById(AUTHOR_EDITOR_ID).style.display = "none";
+    document.getElementById(AUTHOR_INFO_ID).style.display = "block";
   });
 
   const canvas = document.getElementById(CANVAS_ID);

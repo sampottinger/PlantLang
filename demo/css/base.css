@@ -56,6 +56,12 @@ footer details .expansion {
   margin-top: 20px;
 }
 
+.docSection {
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px dotted #C0C0C0;
+}
+
 .top {
   display: grid;
   width: 100%;
@@ -67,6 +73,18 @@ footer details .expansion {
   margin-top: 37px;
   font-size: 15px;
   margin-right: 10px;
+}
+
+#authorInfo {
+  font-weight: 400;
+}
+
+#authorInfoEditor {
+  display: none;
+}
+
+#authorInfoEditor .field {
+  margin-bottom: 20px;
 }
 
 #skipLinks {

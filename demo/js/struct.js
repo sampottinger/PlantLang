@@ -50,7 +50,7 @@ class ParseResult {
    */
   getWasSuccessful() {
     const self = this;
-    return self._errors.length == 0;
+    return self._ast !== null;
   }
 
 }

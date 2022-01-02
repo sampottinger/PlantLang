@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>Plant: A Toy Language for Drawing Plants</title>
-    <link rel="stylesheet" href="./css/plant_drawer.css">
+    <link rel="stylesheet" href="./css/base.css">
   </head>
   <body>
     <div id="skipLinks">
@@ -11,11 +11,11 @@
     <header>
       <div class="top">
         <div class="section"><h1>Plant</h1></div>
-        <div class="section links"><a href="/#editorArea">Editor</a> / <a href="/#languageReference">Docs</a> / <a href="/about">About</a> / <a href="/privacy">Privacy</a> / <a href="/code">Code</a></div>
+        <div role="navigation" class="section links">Home / <a href="/#languageReference">Docs</a> / <a href="/about.html">About</a> / <a href="/privacy.html">Privacy and Terms</a> / <a href="https://github.com/sampottinger/PlantLang">Code</a></div>
       </div>
 
       <div class="description">
-        <span class="summary">Plant is a toy language for drawing plants with primitives. <a href="/?code=skip100|color%23333333|width5abs|stem20|branch>rotate-45deg|stem15%3B>stem70|rotate-95deg|frac4>width0.7rel|rotateiter47deg|speed3start1|rotatesin-10deg|stem20|rotate-50deg|frac3>width0.6rel|rotateiter30deg|stem10|rotate-22.5deg|frac3>rotateiter15deg|width0.3rel|stem5|color%23C5C5C5trans0.3|flower8|frac3>rotateiter20deg|color%23C0C0C0trans0.2|speed2.5|rotatesin50deg|stem10|flower3%3B%3B%3B%3B%3B%3B" id="example">See example</a> or more info about <a href="#languageReference">how to write Plant code</a>.</span> It demonstrates <a href="/about#why">why one might want to create a domain specific language</a> and <a href="/about#how">how to make new languages</a> using <a href="/about#oss">open source tools</a>. Open source and privacy respecting. Write and share your Plant programs below.
+        <span class="summary">Plant is a toy language for recursive drawing with primitives which is especially useful for drawing plants. <a href="/?code=skip100|color%23333333|width5abs|stem20|branch>rotate-45deg|stem15%3B>stem70|rotate-95deg|frac4>width0.7rel|rotateiter47deg|speed3start1|rotatesin-10deg|stem20|rotate-50deg|frac3>width0.6rel|rotateiter30deg|stem10|rotate-22.5deg|frac3>rotateiter15deg|width0.3rel|stem5|color%23C5C5C5trans0.3|flower8|frac3>rotateiter20deg|color%23C0C0C0trans0.2|speed2.5|rotatesin50deg|stem10|flower3%3B%3B%3B%3B%3B%3B" id="example">See example</a> or more info about <a href="#languageReference">how to write Plant code</a>.</span> It demonstrates <a href="/about#why">why one might want to create a domain specific language</a> and <a href="/about#how">how to make new languages</a> using <a href="/about#oss">open source tools</a>. Open source and privacy respecting. Write and share your Plant programs below.
       </div>
     </header>
 
@@ -28,6 +28,38 @@
       </div>
 
       <div class="section" id="resultsDisplay">
+        <div id="authorInfoDisplay">
+          <span id="nameDisplay">Untitled</span> by <span id="authorDisplay">unknown</span> under <a id="licenseLink" target="_blank" href="https://creativecommons.org/share-your-work/public-domain/cc0/"><span id="licenseDisplay">CC0</span></a> license. // <a id="editMetadataLink" href="#authorInfoEditor">edit metadata</a>
+        </div>
+        <div id="authorInfoEditor">
+          <div class="field">
+            <div><label for="name">Name:</label></div>
+            <div><input type="text" id="nameInput" name="name" value="Untitled"></div>
+          </div>
+          <div class="field">
+            <div><label for="author">Author:</label></div>
+            <div><input type="text" id="authorInput" name="author" value="unknown"></div>
+          </div>
+          <div class="field">
+            <div><label for="license">License:</label></div>
+            <div>
+              <select name="license" id="licenseInput">
+                <option value="CC0">CC0</option>
+                <option value="CC BY 4.0">CC BY 4.0</option>
+                <option value="CC BY-SA 4.0">CC BY-SA 4.0</option>
+                <option value="MIT">MIT</option>
+                <option value="BSD 2-Clause">BSD 2-Clause</option>
+                <option value="BSD 3-Clause">BSD 3-Clause</option>
+                <option value="Apache v2">Apache v2</option>
+                <option value="GNU GPL v3">GNU GPL v3</option>
+                <option value="Proprietary" selected>Proprietary</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <a href="#authorInfoDisplay" id="finishMetadataLink">Finish</a>
+          </div>
+        </div>
         <div>
           <canvas id="canvas" width="500" height="500"></canvas>
         </div>
