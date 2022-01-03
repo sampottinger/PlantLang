@@ -62,7 +62,7 @@
             <a href="#authorInfoDisplay" id="finishMetadataLink">Finish</a>
           </div>
         </div>
-        <div>
+        <div class="canvas-holder">
           <canvas id="canvas" width="500" height="500"></canvas>
         </div>
         <div id="statusDisplay">
@@ -78,47 +78,57 @@
     <div class="language-details">
       <details>
        <summary>intro</summary>
-       <div class="expansion">For a quick hello world, consider <a href="/?author=sampottinger&name=example&license=CC0&code=skip100|stem100|rotate45deg|skip20|stem20%3B" class="ref-example">skip 100 | stem 100 | rotate 45 deg | skip 20 | stem 20;</a> which moves forward 100 pixels, draws for 100 pixels, rotates 45 degrees, moves forward 20 pixels, and draws for 20 pixels. Examples are links which, when clicked on, are beautified and run. The rest of the sections in this language reference include examples to demonstrate different language features. Be sure to check out <a href="#branch">branch</a> and <a href="#frac">frac</a> which are the heart of what makes Plant special. Note that spaces and newlines are just for readability and do not change the behavior of your Plant code.</div>
+       <div class="expansion">For a quick example, consider <a href="/?author=sampottinger&name=example&license=CC0&code=skip100|stem100|rotate45deg|skip20|stem20%3B" class="ref-example">skip 100 | stem 100 | rotate 45 deg | skip 20 | stem 20;</a>. In this example program, Plant
+
+         <ul>
+           <li>skips (moves without drawing) forward 100 pixels</li>
+           <li>draws for 100 pixels</li>
+           <li>rotates 45 degrees</li>
+           <li>skips forward 20 pixels</li>
+           <li>draws for 20 pixels</li>
+        </ul>
+
+        Note that examples like the <a href="/?author=sampottinger&name=example&license=CC0&code=skip100|stem100|rotate45deg|skip20|stem20%3B" class="ref-example">introductory code<a> above are links which, when clicked on, are formatted for easier reading and run. Click the link and play around with the code to learn more. With that introduction out of the way, the rest of the sections in this language reference include editable examples to demonstrate different language features. After warming up with some simple commands, be sure to check out <a href="#branch">branch</a> and <a href="#frac">frac</a> which are the heart of what makes Plant special. Finally, you will note that clicking on the links causes the code to get "expanded" out with spaces and newlines. For Plant, spaces and newlines are just for easier reading and do not change the behavior of Plant programs.</div>
       </details>
 
       <details>
        <summary>stem</summary>
-       <div class="expansion">Command which moves forward from the current position, drawing using the current color and width at the current angle. Requires a distance. Example <a href="/?author=sampottinger&name=example&license=CC0&code=stem100%3B" class="ref-example">stem 100;</a> draws forward 100 pixels. The number provided can use number modifiers as described in the <a href="#number">number section</a>.</div>
+       <div class="expansion">Command which moves forward from the current position, drawing using the current color and width at the current angle. Requires a distance. Example <a href="/?author=sampottinger&name=example&license=CC0&code=stem100%3B" class="ref-example">stem 100;</a> draws forward 100 pixels. The number provided can use number modifiers as described in the <a href="#number">number section</a> (don't worry, we will get to it later).</div>
       </details>
 
       <details>
        <summary>skip</summary>
-       <div class="expansion">Command which moves forward from the current position at the current angle without drawing. Requires a distance. Example <a href="/?author=sampottinger&name=example&license=CC0&code=stem100|skip100|stem50%3B" class="ref-example">stem 100 | skip 100 | stem 50;</a> draws forward 100 pixels, skips 100 pixels, and draws 50 pixels. The number provided can use number modifiers as described in the <a href="#number">number section</a>.</div>
+       <div class="expansion">Command which moves forward from the current position at the current angle without drawing. Requires a distance. Example <a href="/?author=sampottinger&name=example&license=CC0&code=stem100|skip100|stem50%3B" class="ref-example">stem 100 | skip 100 | stem 50;</a> draws forward 100 pixels, skips 100 pixels, and draws 50 pixels. The number provided can use number modifiers as described in the <a href="#number">number section</a> (don't worry, we will get to it later).</div>
       </details>
 
       <details>
        <summary>width</summary>
-       <div class="expansion">Command which changes the width with which the stem is drawn. Requires a width either with "abs" or "rel" for absolute pixels or relative multiplier. Example <a href="/?author=sampottinger&name=example&license=CC0&code=width10abs|stem50|width0.5rel|stem40%3B" class="ref-example">width 10 abs | stem 50 | width 0.5 rel | stem 40;</a> draws 50 pixels at width 10 and 40 pixels at width 5. The number provided can use number modifiers as described in the <a href="#number">number section</a>.</div>
+       <div class="expansion">Command which changes the width with which the stem is drawn. Requires a width either with "abs" or "rel" for absolute pixels or relative multiplier. Example <a href="/?author=sampottinger&name=example&license=CC0&code=width10abs|stem50|width0.5rel|stem40%3B" class="ref-example">width 10 abs | stem 50 | width 0.5 rel | stem 40;</a> draws 50 pixels at width 10 and 40 pixels at width 5. The number provided can use number modifiers as described in the <a href="#number">number section</a> (don't worry, we will get to it later).</div>
       </details>
 
       <details>
        <summary>rotate</summary>
-       <div class="expansion">Command which changes the rotation used for future commands. Requires an amount followed by "deg" or "pi" for degress or radians (expressed as multiple of pi). Example <a href="/?author=sampottinger&name=example&license=CC0&code=stem50|rotate0.5pi|stem40%3B" class="ref-example">stem 50 | rotate 0.5 pi | stem 40;</a> draws a right angle. The number provided can use number modifiers as described in the <a href="#number">number section</a>.</div>
+       <div class="expansion">Command which changes the rotation used for future commands. Requires an amount followed by "deg" or "pi" for degress or radians (expressed as multiple of pi). Example <a href="/?author=sampottinger&name=example&license=CC0&code=stem50|rotate0.5pi|stem40%3B" class="ref-example">stem 50 | rotate 0.5 pi | stem 40;</a> draws a right angle. The number provided can use number modifiers as described in the <a href="#number">number section</a> (don't worry, we will get to it later).</div>
       </details>
 
       <details>
        <summary>color</summary>
-       <div class="expansion">Command which changes the color used for future commands. Requires a hex code followed by an optional transparency value from 0 (transparent) to 1 (opaque). Example <a href="/?author=sampottinger&name=example&license=CC0&code=color%23505050|stem50|color%23505050trans0.7|stem40%3B" class="ref-example">color #505050 | stem 50 | color #505050 trans 0.7 | stem 40;</a> draws two grey segments with the second at 70% opacity. The number for transparency can use number modifiers as described in the <a href="#number">number section</a>.</div>
+       <div class="expansion">Command which changes the color used for future commands. Requires a hex code followed by an optional transparency value from 0 (transparent) to 1 (opaque). Example <a href="/?author=sampottinger&name=example&license=CC0&code=color%23505050|stem50|color%23505050trans0.7|stem40%3B" class="ref-example">color #505050 | stem 50 | color #505050 trans 0.7 | stem 40;</a> draws two grey segments with the second at 70% opacity. The number for transparency can use number modifiers as described in the <a href="#number">number section</a> (don't worry, we will get to it later).</div>
       </details>
 
       <details>
        <summary>flower</summary>
-       <div class="expansion">Command which draws a circle at the current position using the current color. Requires a radius. Example <a href="/?author=sampottinger&name=example&license=CC0&code=stem50|flower10%3B" class="ref-example">stem 50 | flower 10;</a> draws a circle with radius 10 pixels at the end of a rectangle of length 50 pixels. The number for radius can use number modifiers as described in the <a href="#number">number section</a>.</div>
+       <div class="expansion">Command which draws a circle at the current position using the current color. Requires a radius. Example <a href="/?author=sampottinger&name=example&license=CC0&code=stem50|flower10%3B" class="ref-example">stem 50 | flower 10;</a> draws a circle with radius 10 pixels at the end of a rectangle of length 50 pixels. The number for radius can use number modifiers as described in the <a href="#number">number section</a> (don't worry, we will get to it later).</div>
       </details>
 
       <details id="branch">
        <summary>branch</summary>
-       <div class="expansion">Creates one or more "branches" each with their own code where changes made within a branch to position, color, width, speed, and rotation only apply within that branch and its sub-branches. Each branch starts with a forward cheveron (">") and ends with a semicolon (";"). This <a href="/?code=color%2300A0A0|stem100|branch>color%230000A0trans0.5|rotate-40deg|stem30%3B>rotate10deg|stem50|branch>rotate-50deg|stem20%3B>rotate50deg|stem20%3B%3B%3B&name=example&author=sampottinger&license=CC0" class="ref-example">branch example</a> draws two branches of different colors and angles with one branch having another sub-branch. Note that "iter" refers to the index of the branch as described in the <a href="#iter">iter section</a>.</div>
+       <div class="expansion">Creates one or more "branches" each with their own code where changes made within a branch to position, color, width, speed, and rotation only apply within that branch and its sub-branches. Each branch starts with a forward cheveron (">") and ends with a semicolon (";"). This <a href="/?code=color%2300A0A0|stem100|branch>color%230000A0trans0.5|rotate-40deg|stem30%3B>rotate10deg|stem50|branch>rotate-50deg|stem20%3B>rotate50deg|stem20%3B%3B%3B&name=example&author=sampottinger&license=CC0" class="ref-example">branch example</a> draws two branches of different colors and angles with one branch having another sub-branch.</div>
       </details>
 
       <details id="frac">
        <summary>frac</summary>
-       <div class="expansion">Creates "branches" each with the same code where changes made within a branch to position, color, width, speed, and rotation only apply within that branch and its sub-branches. The branch starts with a forward cheveron (">") and ends with a semicolon (";"). This <a href="/?code=color%2300C000|stem50|width0.5rel|stem10|rotate-70deg|color%23C0C0C0|frac10>width0.5rel|rotateiter9deg|stem10|stemiter8|color%230000C0transiter0.1|flower10%3B%3B&name=example&author=sampottinger&license=CC0" class="ref-example">frac example</a> draws a fract with 10 branches. Note that "iter" refers to the index of the branch as described in the <a href="#iter">iter section</a>.</div>
+       <div class="expansion">Creates "branches" each with the same code where changes made within a branch to position, color, width, speed, and rotation only apply within that branch and its sub-branches. The branch starts with a forward cheveron (">") and ends with a semicolon (";"). This <a href="/?code=color%2300C000|stem50|width0.5rel|stem10|rotate-70deg|color%23C0C0C0|frac10>width0.5rel|rotateiter9deg|stem10|stemiter8|color%230000C0transiter0.1|flower10%3B%3B&name=example&author=sampottinger&license=CC0" class="ref-example">frac example</a> draws a frac with 10 branches. Note that "iter" refers to the index of the branch as described in the <a href="#id">number: static modifiers section</a>.</div>
       </details>
 
       <div id="number">
@@ -126,7 +136,7 @@
           <summary>number: static modifiers</summary>
           <div class="expansion">Numbers have a number of modifiers which can be used which are the same on each frame of the program. Modifiers can be stacked so one can have "rotate iter rand 10 deg" for example.
             <ul>
-              <li>The iter modifier will cause the value to be multiplied by the branch index. Note that branch indicies start at 0. This <a href="/?author=sampottinger&name=example&license=CC0&code=color%2300C000|stem100|rotate-80deg|frac5>width0.8rel|color%2300C000trans0.5|rotateiter35deg|stem50|rotate-60deg|frac10>width0.4rel|color%230000C0trans0.3|rotateiter20deg|stem10%3B%3B%3B" class="reference-example">iter example</a> demonstrates iter with frac. Multiple iter will multiply the index multiple times. One may traverse upwards by prepending a period so ".iter" gets the parent's branch index and "..iter" gets the grandparent. For example, <a href="/?author=sampottinger&name=example&license=CC0&code=stem100|frac5>rotateiter-20deg|width0.5rel|stem100|frac5>rotateiter-20deg|width0.5rel|stem.iter10%3B%3B%3B">this parent iter example</a> has stems which use their parent's index.</li>
+              <li>The iter modifier will cause the value to be multiplied by the branch index. Note that branch indicies start at 0. This <a href="/?code=color%2300C000|stem100|rotate-80deg|frac5>width0.8rel|color%2300C000trans0.5|rotateiter35deg|stem50|rotate-60deg|frac10>width0.4rel|color%230000C0trans0.3|rotateiter20deg|stemiter5%3B%3B%3B&name=example&author=sampottinger&license=CC0" class="reference-example">iter example</a> demonstrates iter with frac. Multiple iter will multiply the index multiple times. One may traverse upwards by prepending a period so ".iter" gets the parent's branch index and "..iter" gets the grandparent. For example, <a href="/?author=sampottinger&name=example&license=CC0&code=stem100|frac5>rotateiter-20deg|width0.5rel|stem100|frac5>rotateiter-20deg|width0.5rel|stem.iter10%3B%3B%3B">this parent iter example</a> has stems which use their parent's index.</li>
               <li>The rand modifier randomly chooses between 0 and 1 before multiplying to the number given. This <a href="/?author=sampottinger&name=example&license=CC0&code=stem200|branch>rotate-40deg|stemrand100%3B>rotate40deg|stemrand100%3B%3B">rand example</a> creates two branches of random length. Specifying rand multiple times will cause multiple random numbers to be generated and multiplied.</li>
             </ul>
           </div>
@@ -144,7 +154,7 @@
         </details>
         <details>
           <summary>number: date modifiers</summary>
-          <div class="expansion">Numbers have a number of modifiers which can be used which can change based on date of frame render. Example <a href="/?code=color%23505050|stem200|color%23505050trans0.5|stem30|rotatesec15deg|stem30%3B&name=example&author=sampottinger&license=CC0">date demo</a>. Modifiers can be stacked so one can have "rotate sec millis 10 deg" for example.
+          <div class="expansion">Numbers have a number of modifiers which can be used which can change based on date of frame render. Example <a href="/?code=color%23505050|stem200|color%23505050trans0.5|rotatemin6deg|stem30|rotatesec6deg|stem30%3B&name=example&author=sampottinger&license=CC0">date demo</a>. Modifiers can be stacked so one can have "rotate sec millis 10 deg" for example.
             <ul>
               <li>The millis modifier multiplies by the current milliseconds of the second (0 indexed). Specifying sec multiple times causes it to be multiplied multiple times.</li>
               <li>The sec modifier multiplies by the current second of the minute (0 indexed). Specifying sec multiple times causes it to be multiplied multiple times.</li>

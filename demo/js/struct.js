@@ -139,6 +139,7 @@ class State {
     self._duration = duration;
     self._curDate = curDate;
     self._indicies = [0];
+    self._rindicies = [0];
     self._widths = [10];
     self._speeds = [new SpeedSettings(1, 0)];
   }
@@ -180,13 +181,31 @@ class State {
   }
 
   /**
+   * Get the reverse branch index (remain) at the given level.
+   *
+   * @param levels How many levels in the call stack to traverse upwards. This
+   *   corresponds to the number of periods before iter.
+   * @return Num branches after the current one.
+   */
+  getIndex(levels) {
+    const self = this;
+    if (levels >= self._indicies.length) {
+      return 0;
+    } else {
+      return self._rindicies[self._indicies.length - 1 - levels];
+    }
+  }
+
+  /**
    * Set the new index at the current call stack position.
    *
    * @param index The new integer branch index.
+   * @param index Total number of branches;
    */
-  setIndex(index) {
+  setIndex(index, total) {
     const self = this;
     self._indicies[self._indicies.length - 1] = index;
+    self._rindicies[self._indicies.length - 1] = total - index - 1;
   }
 
   /**

@@ -473,7 +473,7 @@ function init() {
   loadCodeFromUri();
 
   // Start rendering program
-  setInterval(() => { render(lastInstructions); }, 0.05);
+  setInterval(() => { render(lastInstructions); }, 0.055);
 }
 
 

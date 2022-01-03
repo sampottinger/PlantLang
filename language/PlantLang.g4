@@ -8,6 +8,10 @@ SKIP_: 's' 'k' 'i' 'p';
 
 BRANCH_: 'b' 'r' 'a' 'n' 'c' 'h';
 
+CHOOSE_: 'c' 'h' 'o' 'o' 's' 'e';
+
+REPLACE_: 'r' 'e' 'p' 'l' 'a' 'c' 'e';
+
 FRAC_: 'f' 'r' 'a' 'c';
 
 ROTATE_: 'r' 'o' 't' 'a' 't' 'e';
@@ -25,6 +29,8 @@ PI_: 'p' 'i';
 PAR_ : '.';
 
 ITER_: 'i' 't' 'e' 'r';
+
+REMAIN_: 'r' 'e' 'm' 'a' 'i' 'n';
 
 RAND_: 'r' 'a' 'n' 'd';
 
@@ -72,7 +78,9 @@ date: (MILLIS_ | SEC_ | MIN_ | HOUR_ | DAY_ | MONTH_ | YEAR_);
 
 iter: (PAR_)* ITER_;
 
-number: (iter | dynamic | date)* ('-' | '+')? (FLOAT_ | INTEGER_);
+remain: (PAR_)* REMAIN_;
+
+number: (iter | dynamic | date | remain)* ('-' | '+')? (FLOAT_ | INTEGER_);
 
 speed: SPEED_ target=number (START_ number)?;
 
@@ -89,6 +97,8 @@ color: COLOR_ target=HEX_CODE_ (TRANS_ number)?;
 flower: FLOWER_ radius=number;
 
 branch: BRANCH_ '>' program ('>' program)*;
+
+choose: CHOOSE_ INTEGER_ (REPLACE_)? '>' program ('>' program)*;
 
 frac: FRAC_ INTEGER_ '>' program;
 

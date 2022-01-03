@@ -42,6 +42,15 @@ class CompileVisitor extends toolkit.PlantLangVisitor {
       });
     }
 
+    const remainMatches = raw.match(/(\.)*remain/g);
+
+    if (remainMatches !== null) {
+      remainMatches.forEach((match) => {
+        const numLevels = self._count(match, ".");
+        multipliers.push((state) => state.getRemain(numLevels));
+      });
+    }
+
     const numRand = self._count(raw, "rand");
     if (numRand > 0) {
       let randStatic = 1;
@@ -287,7 +296,7 @@ class CompileVisitor extends toolkit.PlantLangVisitor {
     for (let i = 0; i < numSubPrograms; i++) {
       const subProgram = ctx.getChild(2 + i * 2).accept(self);
       instructions.push((state) => state.save());
-      instructions.push((state) => state.setIndex(i));
+      instructions.push((state) => state.setIndex(i, numSubPrograms));
       instructions.push.apply(instructions, subProgram);
       instructions.push((state) => state.restore());
     }
@@ -304,14 +313,56 @@ class CompileVisitor extends toolkit.PlantLangVisitor {
     const self = this;
 
     const instructions = [];
-    const subProgram = ctx.getChild(ctx.getChildCount() - 1).accept(self);
     const numFrac = parseFloat(ctx.getChild(1).getText());
 
     for (let i = 0; i < numFrac; i++) {
+      const subProgram = ctx.getChild(ctx.getChildCount() - 1).accept(self);
       instructions.push((state) => state.save());
-      instructions.push((state) => state.setIndex(i));
+      instructions.push((state) => state.setIndex(i, numFrac));
       instructions.push.apply(instructions, subProgram);
       instructions.push((state) => state.restore());
+    }
+
+    return instructions;
+  }
+
+  /**
+   * Visit a choose node and traverse selected children.
+   *
+   * @return Array with functions which cause multiple branches of execution.
+   */
+  visitChoose(ctx) {
+    const self = this;
+
+    const numChoose = parseFloat(ctx.getChild(1).getText());
+    const chooseWithReplace = ctx.getText().includes("replace");
+
+    const childOffset = chooseWithReplace ? 3 : 2;
+    const numSubPrograms = (ctx.getChildCount() - childOffset) / 2;
+
+    const instructionOptions = [];
+    for (let i = 0; i < numSubPrograms; i++) {
+      const subProgram = ctx.getChild(childOffset + 1 + i * 2).accept(self);
+      instructionOptions.push((state) => state.save());
+      instructionOptions.push((state) => state.setIndex(i, numChoose));
+      instructionOptions.push.apply(instructionOptions, subProgram);
+      instructionOptions.push((state) => state.restore());
+    }
+
+    const instructions = [];
+    if (chooseWithReplace) {
+      for (let i = 0; i < numChoose; i++) {
+        instructions.push(instructionOptions[
+          Math.floor(Math.random() * instructionOptions.length)
+        ]);
+      }
+    } else {
+      const indicies = instructionOptions.map((x, i) => i);
+      indicies.sort((a, b) => 0.5 - Math.random());
+      for (let i = 0; i < numChoose; i++) {
+        const chosenIndex = indicies[i % instructionOptions.length];
+        instructions.push(instructionOptions[chosenIndex]);
+      }
     }
 
     return instructions;
@@ -383,6 +434,7 @@ class BeautifyVisitor extends toolkit.PlantLangVisitor {
     const raw = ctx.getText();
 
     return raw.replace(/iter\s*/g, "iter ")
+      .replace(/remain\s*/g, "remain ")
       .replace(/rand\s*/g, "rand ")
       .replace(/mouseX\s*/g, "mouseX ")
       .replace(/mouseY\s*/g, "mouseY ")
@@ -548,6 +600,33 @@ class BeautifyVisitor extends toolkit.PlantLangVisitor {
     allCommands.push.apply(allCommands, subProgram);
     allCommands.push(new CodeComponent("end", ""));
     allCommands.push(new CodeComponent("subBranchEnd", ""));
+
+    return allCommands;
+  }
+
+  /**
+   * Format a choose call.
+   *
+   * @return Array with multiple components.
+   */
+  visitChoose(ctx) {
+    const self = this;
+
+    const hasReplace = ctx.getText().includes("replace");
+
+    const immediate = "choose " + ctx.getChild(1).getText();
+    const replaceText = hasReplace ? " replace " : "";
+    const allCommands = [new CodeComponent("branch", immediate + replace)];
+
+    const childOffset = chooseWithReplace ? 3 : 2;
+    const numSubPrograms = (ctx.getChildCount() - childOffset) / 2;
+    for (let i = 0; i < numSubPrograms; i++) {
+      const subProgram = ctx.getChild(childOffset + 1 + i * 2).accept(self);
+      allCommands.push(new CodeComponent("subBranchStart", ""));
+      allCommands.push.apply(allCommands, subProgram);
+      allCommands.push(new CodeComponent("end", ""));
+      allCommands.push(new CodeComponent("subBranchEnd", ""));
+    }
 
     return allCommands;
   }
