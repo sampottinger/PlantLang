@@ -245,6 +245,11 @@ function beautifyTarget(input) {
   for (let i = 0; i < numComponents; i++) {
     const component = components[i];
     const commandType = component.getCommandType();
+
+    if (indentSize < 0) {
+      indentSize = 0;
+    }
+    
     const whitespace = " ".repeat(indentSize * 2);
 
     const writeRegularCommand = () => {
