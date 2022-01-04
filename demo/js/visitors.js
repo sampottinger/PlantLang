@@ -335,35 +335,37 @@ class CompileVisitor extends toolkit.PlantLangVisitor {
     const self = this;
 
     const numChoose = parseFloat(ctx.getChild(1).getText());
-    const chooseWithReplace = ctx.getText().includes("replace");
+    const chooseWithReplace = ctx.getChild(2).getText() === "replace";
 
     const childOffset = chooseWithReplace ? 3 : 2;
     const numSubPrograms = (ctx.getChildCount() - childOffset) / 2;
 
-    const instructionOptions = [];
-    for (let i = 0; i < numSubPrograms; i++) {
-      const subProgram = ctx.getChild(childOffset + 1 + i * 2).accept(self);
-      instructionOptions.push((state) => state.save());
-      instructionOptions.push((state) => state.setIndex(i, numChoose));
-      instructionOptions.push.apply(instructionOptions, subProgram);
-      instructionOptions.push((state) => state.restore());
+    const indicies = [];
+    if (chooseWithReplace) {
+      for (let i = 0; i < numChoose; i++) {
+        indicies.push(Math.floor(Math.random() * numSubPrograms));
+      }
+    } else {
+      const indexOptions = [];
+      for (let i = 0; i < numSubPrograms; i++) {
+        indexOptions.push(i);
+      }
+
+      indexOptions.sort((a, b) => 0.5 - Math.random());
+      for (let i = 0; i < numChoose; i++) {
+        const chosenIndex = indexOptions[i % indexOptions.length];
+        indicies.push(chosenIndex);
+      }
     }
 
     const instructions = [];
-    if (chooseWithReplace) {
-      for (let i = 0; i < numChoose; i++) {
-        instructions.push(instructionOptions[
-          Math.floor(Math.random() * instructionOptions.length)
-        ]);
-      }
-    } else {
-      const indicies = instructionOptions.map((x, i) => i);
-      indicies.sort((a, b) => 0.5 - Math.random());
-      for (let i = 0; i < numChoose; i++) {
-        const chosenIndex = indicies[i % instructionOptions.length];
-        instructions.push(instructionOptions[chosenIndex]);
-      }
-    }
+    indicies.forEach((i) => {
+      const subProgram = ctx.getChild(childOffset + i * 2 + 1).accept(self);
+      instructions.push((state) => state.save());
+      instructions.push((state) => state.setIndex(i, numChoose));
+      instructions.push.apply(instructions, subProgram);
+      instructions.push((state) => state.restore());
+    });
 
     return instructions;
   }
@@ -612,16 +614,16 @@ class BeautifyVisitor extends toolkit.PlantLangVisitor {
   visitChoose(ctx) {
     const self = this;
 
-    const hasReplace = ctx.getText().includes("replace");
+    const chooseWithReplace = ctx.getChild(2).getText() === "replace";
 
     const immediate = "choose " + ctx.getChild(1).getText();
-    const replaceText = hasReplace ? " replace " : "";
-    const allCommands = [new CodeComponent("branch", immediate + replace)];
+    const replaceText = chooseWithReplace ? " replace " : "";
+    const allCommands = [new CodeComponent("branch", immediate + replaceText)];
 
     const childOffset = chooseWithReplace ? 3 : 2;
     const numSubPrograms = (ctx.getChildCount() - childOffset) / 2;
     for (let i = 0; i < numSubPrograms; i++) {
-      const subProgram = ctx.getChild(childOffset + 1 + i * 2).accept(self);
+      const subProgram = ctx.getChild(childOffset + i * 2 + 1).accept(self);
       allCommands.push(new CodeComponent("subBranchStart", ""));
       allCommands.push.apply(allCommands, subProgram);
       allCommands.push(new CodeComponent("end", ""));

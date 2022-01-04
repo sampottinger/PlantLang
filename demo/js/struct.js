@@ -187,7 +187,7 @@ class State {
    *   corresponds to the number of periods before iter.
    * @return Num branches after the current one.
    */
-  getIndex(levels) {
+  getRemain(levels) {
     const self = this;
     if (levels >= self._indicies.length) {
       return 0;

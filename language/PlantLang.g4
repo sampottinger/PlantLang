@@ -102,6 +102,6 @@ choose: CHOOSE_ INTEGER_ (REPLACE_)? '>' program ('>' program)*;
 
 frac: FRAC_ INTEGER_ '>' program;
 
-command: skip | stem | branch | frac | width | rotate | color | flower | speed;
+command: skip | stem | branch | choose | frac | width | rotate | color | flower | speed;
 
 program: command ('|' command)* ';';
