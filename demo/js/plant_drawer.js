@@ -144,6 +144,7 @@ function checkChange() {
   startTime = new Date().getTime();
 
   updateHistory(true);
+  resetInterval();
 }
 
 
@@ -464,6 +465,33 @@ function initListeners() {
 }
 
 
+function resetInterval() {
+  if (intervalId !== null) {
+    clearInterval(intervalId);
+  }
+
+  const source = getSourceCode();
+  let hasDynamic = source.includes("mouseX");
+  hasDynamic = hasDynamic || source.includes("mouseY");
+  hasDynamic = hasDynamic || source.includes("dur");
+  hasDynamic = hasDynamic || source.includes("sin");
+  hasDynamic = hasDynamic || source.includes("millis");
+  hasDynamic = hasDynamic || source.includes("sec");
+  hasDynamic = hasDynamic || source.includes("min");
+  hasDynamic = hasDynamic || source.includes("hour");
+  hasDynamic = hasDynamic || source.includes("day");
+  hasDynamic = hasDynamic || source.includes("month");
+  hasDynamic = hasDynamic || source.includes("year");
+
+  if (hasDynamic) {
+    intervalId = setInterval(() => { render(lastInstructions); }, 0.055);
+  } else {
+    intervalId = null;
+    render(lastInstructions);
+  }
+}
+
+
 /**
  * Initalize web application.
  */
@@ -471,9 +499,7 @@ function init() {
   initEditor();
   initListeners();
   loadCodeFromUri();
-
-  // Start rendering program
-  setInterval(() => { render(lastInstructions); }, 0.055);
+  resetInterval();
 }
 
 
