@@ -26,7 +26,7 @@ DEG_: 'd' 'e' 'g';
 
 PI_: 'p' 'i';
 
-PAR_ : '.';
+PERIOD_ : '.';
 
 ITER_: 'i' 't' 'e' 'r';
 
@@ -72,29 +72,46 @@ FLOAT_: [0-9]+ '.' [0-9]+;
 
 INTEGER_: [0-9]+;
 
+LPAREN_: '(';
+
+RPAREN_: ')';
+
+MULT_: '*';
+
+DIV_: '/';
+
+ADD_: '+';
+
+SUB_: '+';
+
 dynamic: (X_ | Y_ | DUR_ | SIN_ | RAND_);
 
 date: (MILLIS_ | SEC_ | MIN_ | HOUR_ | DAY_ | MONTH_ | YEAR_);
 
-iter: (PAR_)* ITER_;
+iter: (PERIOD_)* ITER_;
 
-remain: (PAR_)* REMAIN_;
+remain: (PERIOD_)* REMAIN_;
 
 number: (iter | dynamic | date | remain)* ('-' | '+')? (FLOAT_ | INTEGER_);
 
-speed: SPEED_ target=number (START_ number)?;
+expression: number
+  | expression (MULT_ | DIV_) expression
+  | expression (ADD_ | SUB_) expression
+  | LPAREN_ expression RPAREN_;
 
-stem: STEM_ distance=number;
+speed: SPEED_ target=expression (START_ expression)?;
 
-skip: SKIP_ distance=number;
+stem: STEM_ distance=expression;
 
-width: WIDTH_ target=number units=(ABS_ | REL_);
+skip: SKIP_ distance=expression;
 
-rotate: ROTATE_ target=number units=(DEG_ | PI_);
+width: WIDTH_ target=expression units=(ABS_ | REL_);
 
-color: COLOR_ target=HEX_CODE_ (TRANS_ number)?;
+rotate: ROTATE_ target=expression units=(DEG_ | PI_);
 
-flower: FLOWER_ radius=number;
+color: COLOR_ target=HEX_CODE_ (TRANS_ expression)?;
+
+flower: FLOWER_ radius=expression;
 
 branch: BRANCH_ '>' program ('>' program)*;
 
