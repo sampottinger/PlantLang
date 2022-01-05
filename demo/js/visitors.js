@@ -31,23 +31,25 @@ class CompileVisitor extends toolkit.PlantLangVisitor {
     const bodyRawText = ctx.getChild(ctx.getChildCount() - 1).getText();
     const bodyParsed = signMultiplier * parseFloat(bodyRawText);
 
-    const multipliers = [(state) => bodyParsed];
+    const modifiers = [];
 
     const iterMatches = raw.match(/(\.)*iter/g);
-
     if (iterMatches !== null) {
       iterMatches.forEach((match) => {
         const numLevels = self._count(match, ".");
-        multipliers.push((state) => state.getIndex(numLevels));
+        modifiers.push(self._makeMultiplier(
+          (state) => state.getIndex(numLevels)
+        ));
       });
     }
 
     const remainMatches = raw.match(/(\.)*remain/g);
-
     if (remainMatches !== null) {
       remainMatches.forEach((match) => {
         const numLevels = self._count(match, ".");
-        multipliers.push((state) => state.getRemain(numLevels));
+        modifiers.push(self._makeMultiplier(
+          (state) => state.getRemain(numLevels)
+        ));
       });
     }
 
@@ -59,70 +61,101 @@ class CompileVisitor extends toolkit.PlantLangVisitor {
         randStatic *= Math.random();
       }
 
-      multipliers.push((state) => randStatic);
+      modifiers.push(self._makeMultiplier((state) => randStatic));
     }
 
     const numX = self._count(raw, "mouseX");
     if (numX > 0) {
-      multipliers.push((state) => Math.pow(state.getMouseX(), numX));
+      modifiers.push(self._makeMultiplier(
+        (state) => Math.pow(state.getMouseX(), numX)
+      ));
     }
 
     const numY = self._count(raw, "mouseY");
     if (numY > 0) {
-      multipliers.push((state) => Math.pow(state.getMouseY(), numY));
+      modifiers.push(self._makeMultiplier(
+        (state) => Math.pow(state.getMouseY(), numY)
+      ));
     }
 
     const numDur = self._count(raw, "dur");
     if (numDur > 0) {
-      multipliers.push((state) => Math.pow(state.getDuration(), numDur));
+      modifiers.push(self._makeMultiplier(
+        (state) => Math.pow(state.getDuration(), numDur)
+      ));
     }
 
     const numSin = self._count(raw, "sin");
     if (numSin > 0) {
-      multipliers.push((state) => Math.pow(
+      modifiers.push(self._makeMultiplier((state) => Math.pow(
         Math.sin(state.getDuration() / Math.PI),
         numSin
-      ));
+      )));
     }
 
     const numMillis = self._count(raw, "millis");
     if (numMillis > 0) {
-      multipliers.push((state) => Math.pow(state.getMillisecond(), numMillis));
+      modifiers.push(self._makeMultiplier(
+        (state) => Math.pow(state.getMillisecond(), numMillis)
+      ));
     }
 
     const numSec = self._count(raw, "sec");
     if (numSec > 0) {
-      multipliers.push((state) => Math.pow(state.getSecond(), numSec));
+      modifiers.push(self._makeMultiplier(
+        (state) => Math.pow(state.getSecond(), numSec)
+      ));
     }
 
     const numMin = self._count(raw, "min");
     if (numMin > 0) {
-      multipliers.push((state) => Math.pow(state.getMinute(), numMin));
+      modifiers.push(self._makeMultiplier(
+        (state) => Math.pow(state.getMinute(), numMin)
+      ));
     }
 
     const numHour = self._count(raw, "hour");
     if (numHour > 0) {
-      multipliers.push((state) => Math.pow(state.getHour(), numHour));
+      modifiers.push(self._makeMultiplier(
+        (state) => Math.pow(state.getHour(), numHour)
+      ));
     }
 
     const numDay = self._count(raw, "day");
     if (numDay > 0) {
-      multipliers.push((state) => Math.pow(state.getDay(), numDay));
+      modifiers.push(self._makeMultiplier(
+        (state) => Math.pow(state.getDay(), numDay)
+      ));
     }
 
     const numMonth = self._count(raw, "month");
     if (numMonth > 0) {
-      multipliers.push((state) => Math.pow(state.getMonth(), numMonth));
+      modifiers.push(self._makeMultiplier(
+        (state) => Math.pow(state.getMonth(), numMonth)
+      ));
     }
 
     const numYear = self._count(raw, "year");
     if (numYear > 0) {
-      multipliers.push((state) => Math.pow(state.getYear(), numYear));
+      modifiers.push(self._makeMultiplier(
+        (state) => Math.pow(state.getYear(), numYear)
+      ));
+    }
+
+    const numSqrt = self._count(raw, "sqrt");
+    if (numSqrt > 0) {
+      modifiers.push((state) => (operand) => Math.sqrt(operand));
     }
 
     return (state) => {
-      const realized = multipliers.map((x) => x(state));
-      return realized.reduce((a, b) => a * b);
+      let retVal = bodyParsed;
+
+      modifiers.forEach((modifier) => {
+        const realized = modifier(state);
+        retVal = realized(retVal);
+      });
+
+      return retVal;
     };
   }
 
@@ -411,6 +444,28 @@ class CompileVisitor extends toolkit.PlantLangVisitor {
   _count(target, match) {
     const self = this;
     return target.split(match).length - 1;
+  }
+
+  /**
+   * Create a new future multiplier function.
+   *
+   * Wrap a function which returns a number when given state as a function
+   * taking another number and multiplying the returned number.
+   *
+   * @param multiplier The function which, when given state, returns the number
+   *    to multiply to the future number.
+   * @return Function which when given state returns annother function taking a
+   *    number and returning a number (the input number multiplied by the
+   *    number given by multiplier).
+   */
+  _makeMultiplier(multiplier) {
+    const self = this;
+    return (state) => {
+      return (operand) => {
+        const realized = multiplier(state);
+        return realized * operand;
+      };
+    };
   }
 
 }
