@@ -205,7 +205,14 @@ class CompileVisitor extends toolkit.PlantLangVisitor {
     const self = this;
 
     const priorExpression = ctx.getChild(0).accept(self);
-    const opFunc = ctx.op.text === "*" ? (a, b) => a * b : (a, b) => a / b;
+    let opFunc = null;
+    if (ctx.op.text === "*") {
+      opFunc = (a, b) => a * b;
+    } else if (ctx.op.text === "/") {
+      opFunc = (a, b) => a / b;
+    } else if (ctx.op.text === "^") {
+      opFunc = (a, b) => Math.pow(a, b);
+    }
     const afterExpression = ctx.getChild(2).accept(self);
 
     return (state) => {
