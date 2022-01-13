@@ -414,6 +414,28 @@ class CompileVisitor extends toolkit.PlantLangVisitor {
   }
 
   /**
+   * Visit a loop node and traverse child.
+   *
+   * @return Array with functions which cause repeated executionn.
+   */
+  visitLoop(ctx) {
+    const self = this;
+
+    const instructions = [];
+    const numFrac = parseFloat(ctx.getChild(1).getText());
+
+    instructions.push((state) => state.save());
+    for (let i = 0; i < numFrac; i++) {
+      const subProgram = ctx.getChild(ctx.getChildCount() - 1).accept(self);
+      instructions.push((state) => state.setIndex(i, numFrac));
+      instructions.push.apply(instructions, subProgram);
+    }
+    instructions.push((state) => state.restore());
+
+    return instructions;
+  }
+
+  /**
    * Visit a choose node and traverse selected children.
    *
    * @return Array with functions which cause multiple branches of execution.
@@ -753,6 +775,25 @@ class BeautifyVisitor extends toolkit.PlantLangVisitor {
     const self = this;
 
     const immediate = "frac " + ctx.getChild(1).getText();
+    const allCommands = [new CodeComponent("branch", immediate)];
+    const subProgram = ctx.getChild(3).accept(self);
+    allCommands.push(new CodeComponent("subBranchStart", ""));
+    allCommands.push.apply(allCommands, subProgram);
+    allCommands.push(new CodeComponent("end", ""));
+    allCommands.push(new CodeComponent("subBranchEnd", ""));
+
+    return allCommands;
+  }
+
+  /**
+   * Format a loop call.
+   *
+   * @return Array with multiple components.
+   */
+  visitLoop(ctx) {
+    const self = this;
+
+    const immediate = "loop " + ctx.getChild(1).getText();
     const allCommands = [new CodeComponent("branch", immediate)];
     const subProgram = ctx.getChild(3).accept(self);
     allCommands.push(new CodeComponent("subBranchStart", ""));

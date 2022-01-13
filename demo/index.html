@@ -136,6 +136,11 @@
        <div class="expansion">Creates "branches" each with the same code where changes made within a branch to position, color, width, speed, and rotation only apply within that branch and its sub-branches. The branch starts with a forward cheveron (">") and ends with a semicolon (";"). This <a href="/?code=color%2300C000|stem50|width0.5rel|stem10|rotate-70deg|color%23C0C0C0|frac10>width0.5rel|rotateiter9deg|stem10|stemiter8|color%230000C0transiter0.1|flower10%3B%3B&name=example&author=sampottinger&license=CC0" class="ref-example">frac example</a> draws a frac with 10 branches. Note that "iter" refers to the index of the branch as described in the <a href="#id">number: static modifiers section</a>.</div>
       </details>
 
+      <details id="loop">
+       <summary>loop</summary>
+       <div class="expansion">Repeat a single branch such that the index changes but the state (color, rotate, position, etc) is not reset between executions. For example, this creates a spiral: <a href="/?code=skip100|color%23C0C0C0|width5abs|loop10>stem10|rotateiter10deg%3B%3B&name=example&author=sampottinger&license=MIT">skip100|color#C0C0C0|width5abs|loop10>stem10|rotateiter10deg;;</a></div>
+      </details>
+
       <div id="number">
         <details>
           <summary>number: static modifiers</summary>

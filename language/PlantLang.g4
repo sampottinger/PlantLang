@@ -14,6 +14,8 @@ REPLACE_: 'r' 'e' 'p' 'l' 'a' 'c' 'e';
 
 FRAC_: 'f' 'r' 'a' 'c';
 
+LOOP_: 'l' 'o' 'o' 'p';
+
 ROTATE_: 'r' 'o' 't' 'a' 't' 'e';
 
 ABS_: 'a' 'b' 's';
@@ -122,6 +124,8 @@ choose: CHOOSE_ INTEGER_ (REPLACE_)? '>' program ('>' program)*;
 
 frac: FRAC_ INTEGER_ '>' program;
 
-command: skip | stem | branch | choose | frac | width | rotate | color | flower | speed;
+loop: LOOP_ INTEGER_ '>' program;
+
+command: skip | stem | branch | choose | frac | loop | width | rotate | color | flower | speed;
 
 program: command ('|' command)* ';';
