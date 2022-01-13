@@ -366,11 +366,8 @@ class CompileVisitor extends toolkit.PlantLangVisitor {
     const radiusFuture = ctx.radius.accept(self);
 
     const futureFunc = (state) => {
-      const radius = radiusFuture(state);
-
-      if (radius < 0) {
-        radius = 0;
-      }
+      const radiusCandidate = radiusFuture(state);
+      const radius = radiusCandidate < 0 ? 0 : radiusCandidate;
 
       state.getCanvasContext().beginPath();
       state.getCanvasContext().arc(0, 0, radius, 0, 2 * Math.PI, false);
