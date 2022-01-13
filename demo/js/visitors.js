@@ -160,6 +160,60 @@ class CompileVisitor extends toolkit.PlantLangVisitor {
   }
 
   /**
+   * Visit expression which adds or subtracts two other expressions.
+   *
+   * @return Function which takes in a State object and returns a float.
+   */
+  visitAdditionExpression(ctx) {
+    const self = this;
+
+    const priorExpression = ctx.getChild(0).accept(self);
+    const opFunc = ctx.op.text === "+" ? (a, b) => a + b : (a, b) => a - b;
+    const afterExpression = ctx.getChild(2).accept(self);
+
+    return (state) => {
+      return opFunc(priorExpression(state), afterExpression(state));
+    };
+  }
+
+  /**
+   * Visit expression which resolves to a single number.
+   *
+   * @return Function which takes in a State object and returns a float.
+   */
+  visitSimpleExpression(ctx) {
+    const self = this;
+    return ctx.getChild(0).accept(self);
+  }
+
+  /**
+   * Visit expression which is inside parantheses.
+   *
+   * @return Function which takes in a State object and returns a float.
+   */
+  visitParenExpression(ctx) {
+    const self = this;
+    return ctx.getChild(1).accept(self);
+  }
+
+  /**
+   * Visit expression which multiplies or divides two other expressions.
+   *
+   * @return Function which takes in a State object and returns a float.
+   */
+  visitMultiplyExpression(ctx) {
+    const self = this;
+
+    const priorExpression = ctx.getChild(0).accept(self);
+    const opFunc = ctx.op.text === "*" ? (a, b) => a * b : (a, b) => a / b;
+    const afterExpression = ctx.getChild(2).accept(self);
+
+    return (state) => {
+      return opFunc(priorExpression(state), afterExpression(state));
+    };
+  }
+
+  /**
    * Visit a stem node with future draw command.
    *
    * @return Array with function which takes in a State object and will cause a
@@ -583,6 +637,54 @@ class BeautifyVisitor extends toolkit.PlantLangVisitor {
 
     const immediate = core + transAppend;
     return [new CodeComponent("simple", immediate)];
+  }
+
+  /**
+   * Visit expression which adds or subtracts two other expressions.
+   *
+   * @return Function which takes in a State object and returns a float.
+   */
+  visitAdditionExpression(ctx) {
+    const self = this;
+
+    const priorExpression = ctx.getChild(0).accept(self);
+    const afterExpression = ctx.getChild(2).accept(self);
+
+    return priorExpression + " " + ctx.op.text + " " + afterExpression;
+  }
+
+  /**
+   * Visit expression which resolves to a single number.
+   *
+   * @return Function which takes in a State object and returns a float.
+   */
+  visitSimpleExpression(ctx) {
+    const self = this;
+    return ctx.getChild(0).accept(self);
+  }
+
+  /**
+   * Visit expression which is inside parantheses.
+   *
+   * @return Function which takes in a State object and returns a float.
+   */
+  visitParenExpression(ctx) {
+    const self = this;
+    return "(" + ctx.getChild(1).accept(self) + ")";
+  }
+
+  /**
+   * Visit expression which multiplies or divides two other expressions.
+   *
+   * @return Function which takes in a State object and returns a float.
+   */
+  visitMultiplyExpression(ctx) {
+    const self = this;
+
+    const priorExpression = ctx.getChild(0).accept(self);
+    const afterExpression = ctx.getChild(2).accept(self);
+
+    return priorExpression + " " + ctx.op.text + " " + afterExpression;
   }
 
   /**

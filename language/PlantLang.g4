@@ -82,7 +82,9 @@ DIV_: '/';
 
 ADD_: '+';
 
-SUB_: '+';
+SUB_: '-';
+
+POW_: '^';
 
 dynamic: (X_ | Y_ | DUR_ | SIN_ | RAND_);
 
@@ -92,12 +94,13 @@ iter: (PERIOD_)* ITER_;
 
 remain: (PERIOD_)* REMAIN_;
 
-number: (iter | dynamic | date | remain)* ('-' | '+')? (FLOAT_ | INTEGER_);
+number: (iter | dynamic | date | remain)* (ADD_ | SUB_)? (FLOAT_ | INTEGER_);
 
-expression: number
-  | expression (MULT_ | DIV_) expression
-  | expression (ADD_ | SUB_) expression
-  | LPAREN_ expression RPAREN_;
+expression: number # simpleExpression
+  | expression op=(MULT_ | DIV_ | POW_) expression  # multiplyExpression
+  | expression op=(ADD_ | SUB_) expression # additionExpression
+  | LPAREN_ expression RPAREN_ # parenExpression
+  ;
 
 speed: SPEED_ target=expression (START_ expression)?;
 
