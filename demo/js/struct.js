@@ -371,6 +371,18 @@ class State {
   }
 
   /**
+   * Save and push the current stack state index.
+   *
+   * Save and push the current stack state like when going into kloop. This only
+   * saves the indicies.
+   */
+  saveKeep() {
+    const self = this;
+    
+    self._indicies.push(self.getIndex(0));
+  }
+
+  /**
    * Pop the stack state.
    *
    * Pop the stack state like at the end of the branch or frac (encounter ;).
@@ -384,6 +396,18 @@ class State {
     self._indicies.pop();
     self._widths.pop();
     self._speeds.pop();
+  }
+
+  /**
+   * Pop the stack state but keep everything other than indicies.
+   *
+   * Pop the stack state like at the end of kloop (encounter ;). This causes all
+   * changes to branch index to get undone as the parent branch continues.
+   */
+  restoreKeep() {
+    const self = this;
+
+    self._indicies.pop();
   }
 
 }

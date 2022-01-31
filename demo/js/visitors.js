@@ -454,11 +454,13 @@ class CompileVisitor extends toolkit.PlantLangVisitor {
     const instructions = [];
     const numFrac = parseFloat(ctx.getChild(1).getText());
 
+    instructions.push((state) => state.saveKeep());
     for (let i = 0; i < numFrac; i++) {
       const subProgram = ctx.getChild(ctx.getChildCount() - 1).accept(self);
       instructions.push((state) => state.setIndex(i, numFrac));
       instructions.push.apply(instructions, subProgram);
     }
+    instructions.push((state) => state.restoreKeep());
 
     return instructions;
   }
