@@ -16,6 +16,8 @@ FRAC_: 'f' 'r' 'a' 'c';
 
 LOOP_: 'l' 'o' 'o' 'p';
 
+KLOOP_: 'k' 'l' 'o' 'o' 'p';
+
 ROTATE_: 'r' 'o' 't' 'a' 't' 'e';
 
 ABS_: 'a' 'b' 's';
@@ -126,6 +128,8 @@ frac: FRAC_ INTEGER_ '>' program;
 
 loop: LOOP_ INTEGER_ '>' program;
 
-command: skip | stem | branch | choose | frac | loop | width | rotate | color | flower | speed;
+kloop: KLOOP_ INTEGER_ '>' program;
+
+command: skip | stem | branch | choose | frac | loop | kloop | width | rotate | color | flower | speed;
 
 program: command ('|' command)* ';';

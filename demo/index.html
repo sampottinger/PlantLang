@@ -143,7 +143,12 @@
 
       <details id="loop">
        <summary>loop</summary>
-       <div class="expansion">Repeat a single branch such that the index changes but the state (color, rotate, position, etc) is not reset between executions. For example, this creates a spiral: <a href="/?code=skip100|color%23C0C0C0|width5abs|loop10>stem10|rotateiter10deg%3B%3B&name=example&author=sampottinger&license=MIT">skip100|color#C0C0C0|width5abs|loop10>stem10|rotateiter10deg;;</a></div>
+       <div class="expansion">Repeat a single branch such that the index changes but the state (color, rotate, position, etc) is not reset between executions. For example, this creates a spiral: <a href="/?code=skip100|color%23C0C0C0|width5abs|loop10>stem10|rotateiter10deg%3B%3B&name=example&author=sampottinger&license=MIT">skip100|color#C0C0C0|width5abs|loop10>stem10|rotateiter10deg;;</a>.</div>
+      </details>
+
+      <details id="kloop">
+       <summary>kloop</summary>
+       <div class="expansion">Repeat a single branch such that the index changes but the state (color, rotate, position, etc) is not reset between executions. Unlike loop, this also happens without saving or restoring the state at the start / end of the loop. For example, <a href="/?code=skip100|color%23C0C0C0|width5abs|kloop10>stem10|skip10|rotateiter7deg%3B|skip10|flower10%3B&name=example&author=sampottinger&license=MIT">this creates a spiral with a flower at the end</a>.</div>
       </details>
 
       <div id="number">
