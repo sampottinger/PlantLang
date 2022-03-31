@@ -19,7 +19,8 @@ jobs:
         shell: bash
         run: |
           chmod +x "./make.sh"
-          "npm install ./intermediate/package.json"
+          chmod +x "./npm_install.sh"
+          "./npm_install.sh"
           "./make.sh"
       - name: Upload Files
         id: upload
