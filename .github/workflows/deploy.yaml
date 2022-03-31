@@ -19,7 +19,7 @@ jobs:
         shell: bash
         run: |
           chmod +x "./make.sh"
-          "npm install babel-loader"
+          "npm install ./intermediate/package.json"
           "./make.sh"
       - name: Upload Files
         id: upload
