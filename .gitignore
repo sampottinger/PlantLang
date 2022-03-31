@@ -1,4 +1,3 @@
-*.jar
 .DS_Store
 intermediate/PlantLang.interp
 intermediate/PlantLang.tokens
