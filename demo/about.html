@@ -5,13 +5,13 @@
   </head>
   <body>
     <div id="skipLinks">
-      <a href="#editorArea">Skip to editor</a> / <a href="#languageReference">Skip to language reference</a>
+      <a href="#content">Skip to content</a>
     </div>
 
     <header>
       <div class="top">
         <div class="section"><h1>About Plant</h1></div>
-        <div role="navigation" class="section links"><a href="/">Home</a> / <a href="/#languageReference">Docs</a> / About / <a href="/terms.html">Privacy and Terms</a> / <a href="https://github.com/sampottinger/PlantLang">Code</a></div>
+        <div role="navigation" class="section links"><a href="/">Home</a> / <a href="/#languageReference">Docs</a> / About / <a href="/terms.html">Privacy</a> / <a href="https://github.com/sampottinger/PlantLang">Code</a></div>
       </div>
 
       <div class="description">
@@ -19,51 +19,53 @@
       </div>
     </header>
 
-    <div class="docSection" id="oss">
-      <h2>Things used in Plant</h2>
-      <p>
-        Plant as a language draws inspiration from <a href="https://en.wikipedia.org/wiki/Logo_(programming_language)">Logo</a>, <a href="https://processing.org/">Processing</a>, and shell scripting. It uses as close to vanilla JS as possible. It also uses the following technologies:
+    <article id="content">
+      <div class="docSection" id="oss">
+        <h2>Things used in Plant</h2>
+        <p>
+          Plant as a language draws inspiration from <a href="https://en.wikipedia.org/wiki/Logo_(programming_language)">Logo</a>, <a href="https://processing.org/">Processing</a>, and shell scripting. It uses as close to vanilla JS as possible. It also uses the following technologies:
 
-        <ul>
-          <li><a href="https://www.antlr.org/index.html">ANTLR</a> under the <a href="https://www.antlr.org/license.html">BSD license</a></li>
-          <li><a href="https://ace.c9.io/">Ace Editor</a> under the <a href="https://github.com/ajaxorg/ace/blob/master/LICENSE">BSD license</a></li>
-        </ul>
+          <ul>
+            <li><a href="https://www.antlr.org/index.html">ANTLR</a> under the <a href="https://www.antlr.org/license.html">BSD license</a></li>
+            <li><a href="https://ace.c9.io/">Ace Editor</a> under the <a href="https://github.com/ajaxorg/ace/blob/master/LICENSE">BSD license</a></li>
+          </ul>
 
-        It also incidentally uses the following during build as required by ANTLR:
+          It also incidentally uses the following during build as required by ANTLR:
 
-        <ul>
-          <li><a href="https://nodejs.org/en/">Node</a></li>
-          <li><a href="https://www.npmjs.com/">NPM</a></li>
-          <li><a href="https://webpack.js.org/">Webpack</a></li>
-        </ul>
-      </p>
-    </div>
+          <ul>
+            <li><a href="https://nodejs.org/en/">Node</a></li>
+            <li><a href="https://www.npmjs.com/">NPM</a></li>
+            <li><a href="https://webpack.js.org/">Webpack</a></li>
+          </ul>
+        </p>
+      </div>
 
-    <div class="docSection" id="why">
-      <h2>Why Plant</h2>
-      <p>
-        Plant isn't really meant to be practical. It's just a way to draw things with lots of branching or fractal-like structures. It also is meant to be a a very simple language which shows why "<a href="https://freecontent.manning.com/the-what-and-why-of-domain-specific-lanugages/">domain specific languages</a>" are important. These are languages which aren't meant to necessarily be turing complete (can't do everything a normal langugae would do) but accomplish some very specific task well.
-      </p>
-      <p>
-        The "shape" of languages (<a href="http://worrydream.com/MediaForThinkingTheUnthinkable/">like any tool</a>) changes the way one thinks about how they are used and what they are used on. Plant tries to show how, by changing the way one describes a drawing, it makes it easier to think in branching structures and build branching drawings.
-      </p>
-      <p>
-        This DSL, like others, attempts to make it more "efficient" to work through a specific problem compared to general purpose languages. If you are interested in making your own domain specific languages, <a href="https://github.com/sampottinger/PlantLang">code and documentation are available on Github</a>.
-      </p>
-    </div>
+      <div class="docSection" id="why">
+        <h2>Why Plant</h2>
+        <p>
+          Plant isn't really meant to be practical. It's just a way to draw things with lots of branching or fractal-like structures. It also is meant to be a a very simple language which shows why "<a href="https://freecontent.manning.com/the-what-and-why-of-domain-specific-lanugages/">domain specific languages</a>" are important. These are languages which aren't meant to necessarily be turing complete (can't do everything a normal langugae would do) but accomplish some very specific task well.
+        </p>
+        <p>
+          The "shape" of languages (<a href="http://worrydream.com/MediaForThinkingTheUnthinkable/">like any tool</a>) changes the way one thinks about how they are used and what they are used on. Plant tries to show how, by changing the way one describes a drawing, it makes it easier to think in branching structures and build branching drawings.
+        </p>
+        <p>
+          This DSL, like others, attempts to make it more "efficient" to work through a specific problem compared to general purpose languages. If you are interested in making your own domain specific languages, <a href="https://github.com/sampottinger/PlantLang">code and documentation are available on Github</a>.
+        </p>
+      </div>
 
-    <div class="docSection" id="how">
-      <h2>How is Plant built?</h2>
-      <p>
-        Plant is meant to inpsire others to build their own domain specific languages. Therefore, it has a very <a href="https://github.com/sampottinger/PlantLang/blob/main/language/PlantLang.g4">simple ANTLR language definition</a> and uses as few libraries as possible. Most of it uses vanilla JS.
-      </p>
-      <p>
-        This project <a href="https://github.com/sampottinger/PlantLang/tree/main/intermediate">compiles its JS alongside the ANTLR JS runtime</a> using a standard node stack. Finally, <a href="https://github.com/sampottinger/PlantLang/tree/main/demo">vanilla JS runs an online editor</a> where that code has heavy documentation for expansion. Of particular interest are <a href="https://github.com/sampottinger/PlantLang/blob/main/demo/js/visitors.js">the visitors</a> where code generation actually happens.
-      </p>
-      <p>
-        It can be built by <a href="https://github.com/sampottinger/PlantLang">cloning the repository</a>, saving the <a href="https://www.antlr.org/download/antlr-4.9.3-complete.jar">ANTLR jar</a> to the language subdirectory, running make.sh in the root directory, and starting a web server in the demo subdirectory (python -m http.server 9000 would do!).
-      </p>
-    </div>
+      <div class="docSection" id="how">
+        <h2>How is Plant built?</h2>
+        <p>
+          Plant is meant to inpsire others to build their own domain specific languages. Therefore, it has a very <a href="https://github.com/sampottinger/PlantLang/blob/main/language/PlantLang.g4">simple ANTLR language definition</a> and uses as few libraries as possible. Most of it uses vanilla JS.
+        </p>
+        <p>
+          This project <a href="https://github.com/sampottinger/PlantLang/tree/main/intermediate">compiles its JS alongside the ANTLR JS runtime</a> using a standard node stack. Finally, <a href="https://github.com/sampottinger/PlantLang/tree/main/demo">vanilla JS runs an online editor</a> where that code has heavy documentation for expansion. Of particular interest are <a href="https://github.com/sampottinger/PlantLang/blob/main/demo/js/visitors.js">the visitors</a> where code generation actually happens.
+        </p>
+        <p>
+          It can be built by <a href="https://github.com/sampottinger/PlantLang">cloning the repository</a>, saving the <a href="https://www.antlr.org/download/antlr-4.9.3-complete.jar">ANTLR jar</a> to the language subdirectory, running make.sh in the root directory, and starting a web server in the demo subdirectory (python -m http.server 9000 would do!).
+        </p>
+      </div>
+    </article>
 
   </body>
 </html>
