@@ -10,3 +10,4 @@ intermediate/PlantLangVisitor.js
 intermediate/.babelrc
 intermediate/node_modules
 demo/js/plant_lang.js
+language/*.jar
