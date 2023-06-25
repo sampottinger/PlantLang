@@ -5,7 +5,8 @@
     "build": "webpack --mode=development"
   },
   "dependencies": {
-    "antlr4": "^4.9.3"
+    "antlr4": "^4.13.0",
+    "package.json": "^2.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.16.5",
