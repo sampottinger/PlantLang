@@ -29,7 +29,7 @@ To extend Plant, [see more about how it is built](https://plantlang.ink/about#ho
 <br>
 
 ## License
-MIT Licensed. See LICENSE.txt.
+MIT Licensed. See [LICENSE.txt](https://github.com/sampottinger/PlantLang/blob/main/LICENSE.txt). Though may not be required, released with employer permission.
 
 <br>
 
