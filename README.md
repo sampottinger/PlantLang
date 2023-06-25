@@ -33,8 +33,10 @@ MIT Licensed. See LICENSE.txt.
 
 <br>
 
-## Third party code used
+## Open source
 Plant uses the following:
 
- - [ANTLR](https://www.antlr.org/index.html) under the [BSD license](https://www.antlr.org/license.html).
+ - [ANTLR](https://www.antlr.org/index.html) under the [BSD License](https://www.antlr.org/license.html).
  - [Ace Editor](https://ace.c9.io/) under the [BSD License](https://github.com/ajaxorg/ace/blob/master/LICENSE).
+
+Thanks to [arithmetic](https://github.com/antlr/grammars-v4/blob/master/arithmetic/arithmetic.g4) by Tom Everett under inline BSD License and the [ANTLR Mega Tutorial](https://github.com/gabriele-tomassetti/antlr-mega-tutorial) by Gabriele Tomassetti under the [MIT License](https://github.com/gabriele-tomassetti/antlr-mega-tutorial/blob/master/LICENSE.md).
