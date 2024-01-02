@@ -360,39 +360,13 @@ function setMetadata(name, author, license) {
 
 
 /**
- * Enable and disable Ace editor commands.
- *
- * To better support accessibility, turn editor commands on and off like for
- * tab support. Thanks stackoverflow.com/questions/24963246/ace-editor-simply-re-enable-command-after-disabled-it.
- *
- * @param editor The Ace editor to modify.
- * @param name The name of the command to modify.
- * @param enabled Flag indicating if the command should be enabled.
- */
-function setCommandEnabled(editor, name, enabled) {
-  var command = editor.commands.byName[name]
-  if (!command.bindKeyOriginal)
-    command.bindKeyOriginal = command.bindKey
-  command.bindKey = enabled ? command.bindKeyOriginal : null;
-  editor.commands.addCommand(command);
-  // special case for backspace and delete which will be called from
-  // textarea if not handled by main commandb binding
-  if (!enabled) {
-    var key = command.bindKeyOriginal;
-    if (key && typeof key == "object")
-      key = key[editor.commands.platform];
-    if (/backspace|delete/i.test(key))
-      editor.commands.bindKey(key, "null")
-  }
-}
-
-
-/**
  * Initalize the editor.
  */
 function initEditor() {
   editor = ace.edit("editor");
   editor.getSession().setUseWorker(false);
+
+  editor.setOption("enableKeyboardAccessibility", true);
 
   editor.session.setOptions({
       tabSize: 2,
@@ -401,22 +375,6 @@ function initEditor() {
 
   editor.setTheme("ace/theme/monokai");
   editor.on("change", () => checkChange());
-
-  // Support keyboard escape for better accessibility
-  const setTabsEnabled = (target) => {
-    setCommandEnabled(editor, "indent", target);
-    setCommandEnabled(editor, "outdent", target);
-  };
-
-  editor.on("focus", () => { setTabsEnabled(true); });
-
-  editor.commands.addCommand({
-    name: "escape",
-    bindKey: {win: "Esc", mac: "Esc"},
-    exec: () => {
-      setTabsEnabled(false);
-    }
-  });
 }
 
 
